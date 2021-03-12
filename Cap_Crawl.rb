@@ -18,25 +18,13 @@ class CapCrawl
 
   BASE_URL = "https://laws-lois.justice.gc.ca/".freeze
   ACTS_URL = "eng/acts/".freeze
+
   def start
     all_acts = []
     LETTERS.each do |index|
       index_acts = []
-      # body = File.read("webmocks/#{index}.html")
       create_folders(index)
-      # url = "#{base_url}#{acts_uri}Y.html"
-      # body = File.read("webmocks/Y.html")
-      # Process.spawn("mkdir PDFs/Y")
-      # Process.spawn("mkdir JSONs/Y")
-      # ------------------------stabing requests for development --------------
-      # stub_request(:get, url).
-      #   with(headers: {
-      #   'Accept'=>'*/*',
-      #   'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-      #   'Host'=>'laws-lois.justice.gc.ca',
-      #   'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
-      #   }).to_return(status: 200, body: body, headers: {})
-      begin
+        begin
         response = get_request("#{BASE_URL}#{ACTS_URL}#{index}.html", {})
       rescue RestClient::ExceptionWithResponse => e
         display_error(e, "#{BASE_URL}#{ACTS_URL}#{index}.html")
@@ -133,7 +121,7 @@ class CapCrawl
   end
 
   def extract_one_comma_coding(cyc_details, content)
-    # S.C. 1979, c. 7, S.C. 1979, c. 7,  R.S.C. 1979, c. 7 (sometimes
+    # S.C. 1979, c. 7, S.C. 1979, c. 7,  R.S.C. 1979, c. 7 (sometimes)
     cyc_details[:code] = content.strip.split(",")[1].strip # eg. c. A-5, A-14
     cyc_details[:category] = content.split(" ")[3].strip
     cyc_details[:year] = content.split(" ")[4].strip # eg. c. A-5, A-14
@@ -163,5 +151,6 @@ class CapCrawl
     response
   end
 end
+
 cap_crawl = CapCrawl.new
 cap_crawl.start
