@@ -13,7 +13,7 @@ Webmock and Stubbing http requests:
 * you can stub your http requests using webmock for testing
 * create the following folders `$ mkdir JSONs && mkdir PDFs && webmocks`
 * run the bash script `$ ./curl_get_stubs.sh`
-* add following lines begining of 'start' method `body = File.read("webmocks/#{index}.html")`
+* add following lines begining of 'start' method ```body = File.read("webmocks/#{index}.html")`
 * stub your http requests (add below previous line) 
       `body = File.read("webmocks/Y.html")
       Process.spawn("mkdir PDFs/Y")
@@ -25,7 +25,7 @@ Webmock and Stubbing http requests:
         'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
         'Host'=>'laws-lois.justice.gc.ca',
         'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
-        }).to_return(status: 200, body: body, headers: {})`
+        }).to_return(status: 200, body: body, headers: {})```
 
         
 Features to add [coming soon...]
@@ -55,7 +55,7 @@ Further Development [coming soon...]
 * Task 1 -
 * Task 1-1 -
 
-Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
 This work is licensed under a
 [Creative Commons Attribution-NonCommercialShareAlike 4.0 International License][cc-by-nc-sa].
