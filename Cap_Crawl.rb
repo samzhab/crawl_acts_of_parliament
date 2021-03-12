@@ -24,11 +24,11 @@ class CapCrawl
     LETTERS.each do |index|
       index_acts = []
       create_folders(index)
-        begin
-        response = get_request("#{BASE_URL}#{ACTS_URL}#{index}.html", {})
-      rescue RestClient::ExceptionWithResponse => e
-        display_error(e, "#{BASE_URL}#{ACTS_URL}#{index}.html")
-      end
+      begin
+      response = get_request("#{BASE_URL}#{ACTS_URL}#{index}.html", {})
+    rescue RestClient::ExceptionWithResponse => e
+      display_error(e, "#{BASE_URL}#{ACTS_URL}#{index}.html")
+    end
       Nokogiri::HTML(response).css(".wet-boew-zebra").children.each do |act|
         next if act.children.count < 1
         act_details = get_details(act)
