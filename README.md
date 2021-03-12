@@ -14,8 +14,7 @@ Webmock and Stubbing http requests:
 * create the following folders `$ mkdir JSONs && mkdir PDFs && webmocks`
 * run the bash script `$ ./curl_get_stubs.sh`
 * add following lines begining of 'LETTERS' loop `body = File.read("webmocks/#{index}.html")`
-* read your files with `body = File.read("webmocks/#{index}.html")
-* create your
+* read your files with `body = File.read("webmocks/#{index}.html")`
 * stub your http requests (add below previous line) 
           ```stub_request(:get, url).
             with(headers: {
