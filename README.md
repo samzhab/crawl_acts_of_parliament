@@ -25,7 +25,8 @@ Webmock and Stubbing http requests:
         'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
         'Host'=>'laws-lois.justice.gc.ca',
         'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
-        }).to_return(status: 200, body: body, headers: {})```
+        }).to_return(status: 200, body: body, headers: {})
+        ```
 
         
 Features to add [coming soon...]
