@@ -13,19 +13,19 @@ Webmock and Stubbing http requests:
 * you can stub your http requests using webmock for testing
 * create the following folders `$ mkdir JSONs && mkdir PDFs && webmocks`
 * run the bash script `$ ./curl_get_stubs.sh`
-* add following lines begining of 'start' method ```body = File.read("webmocks/#{index}.html")`
+* add following lines begining of 'start' method `body = File.read("webmocks/#{index}.html")`
 * stub your http requests (add below previous line) 
-      `body = File.read("webmocks/Y.html")
-      Process.spawn("mkdir PDFs/Y")
-      Process.spawn("mkdir JSONs/Y")
-      -------------- stubing requests for development --------------
-      stub_request(:get, url).
-        with(headers: {
-        'Accept'=>'*/*',
-        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-        'Host'=>'laws-lois.justice.gc.ca',
-        'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
-        }).to_return(status: 200, body: body, headers: {})
+      ```body = File.read("webmocks/Y.html")
+         Process.spawn("mkdir PDFs/Y")
+         Process.spawn("mkdir JSONs/Y")
+          -------------- stubing requests for development --------------
+         stub_request(:get, url).
+            with(headers: {
+              'Accept'=>'*/*',
+              'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+              'Host'=>'laws-lois.justice.gc.ca',
+              'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
+            }).to_return(status: 200, body: body, headers: {})
         ```
 
         
