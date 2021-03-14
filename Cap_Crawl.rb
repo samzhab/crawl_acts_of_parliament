@@ -33,10 +33,10 @@ class CapCrawl
       Nokogiri::HTML(response).css(".wet-boew-zebra").children.each do |act|
         next if act.children.count < 1
         act_details = get_details(act)
-        display_message(act_details, "status")
         update_index_acts_list(index_acts, act_details)
         update_all_acts_list(all_acts, act_details)
         write_one_to_file(index_acts, index, act_details)
+        display_message(act_details, "notice")
       end
     end
     write_all_to_file(all_acts)
@@ -55,6 +55,8 @@ class CapCrawl
   def create_folders(index)
     Process.spawn("mkdir PDFs/#{index}")
     Process.spawn("mkdir JSONs/#{index}")
+    Process.spawn("mkdir HTMLs/#{index}")
+    # Process.spawn("mkdir XMLs/#{index}")
   end
 
   def write_all_to_file(all_acts)
@@ -63,7 +65,9 @@ class CapCrawl
   end
 
   def write_one_to_file(index_acts, index, act_details)
-    get_pdf_file(act_details[:uri], BASE_URL, index)
+    get_pdf_file(act_details[:uri], index)
+    get_html_file(act_details, index)
+    # get_xml_file(act_details, index)
     File.write("JSONs/#{index}/#{index}_parliament_acts.json",
                JSON.dump(index_acts))
   end
@@ -77,7 +81,7 @@ class CapCrawl
     act_details[:uri] = act.css("a").attribute("href").value.to_s
     act_details = act_details.merge(cyc_details)
     act_details = act_details.merge(more_details)
-    display_message(act_details, "notice")
+    display_message(act_details, "status")
     act_details
   end
 
@@ -93,10 +97,22 @@ class CapCrawl
     puts "[Error][CAP] - #{error} for #{url}"
   end
 
-  def get_pdf_file(uri, base_url, index)
-    Down.download("#{base_url}PDF/#{uri.split('/')[0]}.pdf", destination: "PDFs")
+  def get_pdf_file(uri, index)
+    Down.download("#{BASE_URL}PDF/#{uri.split('/')[0]}.pdf", destination: "PDFs")
     Process.spawn("mv PDFs/down\*.pdf PDFs/#{index}/#{uri.split('/')[0]}.pdf")
   end
+
+  def get_html_file(act_details, index)
+    Down.download("#{BASE_URL}#{ACTS_URL}#{act_details[:uri].split('/')[0]}/FullText.html",
+                  destination: "HTMLs/")
+    Process.spawn("mv HTMLs/down\*.html HTMLs/#{index}/#{act_details[:uri].split('/')[0]}.html")
+  end
+
+  # def get_xml_file(act_details, index)
+  #   Down.download("#{BASE_URL}/eng/XML/#{act_details[:uri].split('/')[0]}.xml",
+  #                 destination: "XMLs/")
+  #   Process.spawn("mv XMLs/down\*.xml XMLs/#{index}/#{act_details[:uri].split('/')[0]}.xml")
+  # end
 
   def get_cyc_details(act)
     cyc_details = {category: "", year: "", code: ""}
