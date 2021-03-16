@@ -63,15 +63,15 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  addressable (~> 2.5.2)
+  addressable
   byebug
   down
   fileutils
-  json (~> 2.1.0)
-  nokogiri (>= 1.10.8)
+  json
+  nokogiri
   progressbar
   rest-client
-  rubocop (~> 0.51.0)
+  rubocop
   webmock
   wkhtmltopdf
 
