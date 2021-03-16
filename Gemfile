@@ -17,3 +17,4 @@ gem "nokogiri", ">= 1.10.8"
 gem 'webmock'
 gem 'down'
 gem 'fileutils'
+gem 'progressbar'
