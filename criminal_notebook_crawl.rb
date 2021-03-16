@@ -44,7 +44,7 @@ class CriminalNoteBookCrawl
   def fetch_full_detail(offence, values)
     read_data_from_file("#{JSON_PATH}/#{offence}/#{offence}.json").each do |dat|
       begin
-        response = get_request("#{BASE_URL}#{dat["url"]}", {})
+        response = get_request("#{BASE_URL}#{dat['url']}", {})
       rescue RestClient::ExceptionWithResponse => e
         puts "Failed #{e}"
       end
@@ -86,7 +86,7 @@ class CriminalNoteBookCrawl
     table.css("td[1]").zip(table.css("td[2]")).each do |td, td2|
       detail_hash = {offence: td.text.gsub("\n","").strip, section: td2.text}
       td.css("a").each do |a|
-        a_href = a['href'].gsub("/index.php/","").strip
+        a_href = a["href"].gsub("/index.php/", "").strip
         detail_hash[:url] = a_href
       end
       details_array << detail_hash
