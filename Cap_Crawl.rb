@@ -6,7 +6,7 @@ require "byebug"
 require "nokogiri"
 require "csv"
 require "down"
-require "webmock"
+# require "webmock"
 require "fileutils"
 # url = "#{base_url}#{acts_uri}Y.html"
 
