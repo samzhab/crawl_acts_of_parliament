@@ -11,7 +11,6 @@ require 'csv'
 require 'down'
 require 'webmock'
 require 'fileutils'
-require 'progressbar'
 
 class CriminalNoteBookCrawl
   BASE_URL = 'http://criminalnotebook.ca/index.php/'
@@ -28,7 +27,6 @@ class CriminalNoteBookCrawl
   TEXT_PATH = 'TEXTs/criminalnotebook'
 
   def start
-    progressbar = ProgressBar.create(title: 'Offences', starting_at: 0, total: LIST.count)
     LIST.each do |offence, values|
       create_folders(offence)
       begin
@@ -36,26 +34,28 @@ class CriminalNoteBookCrawl
       rescue RestClient::ExceptionWithResponse => e
         puts "Failed #{e}"
       end
+      display_message(offence, 'status')
       tables_info = parse_tables_info(response)
       write_json_to_file(offence, tables_info)
       fetch_full_detail(offence, values)
-      progressbar.increment
+      display_message(offence, 'notice')
     end
-    progressbar.finish
   end
 
   def fetch_full_detail(offence, values)
+    used_urls = []
     read_data_from_file("#{JSON_PATH}/#{offence}/#{offence}.json").each do |dat|
+      next if used_urls.include?(dat['url'])
+      used_urls << dat['url']
+      display_message(dat['url'], 'status')
       begin
         response = get_request("#{BASE_URL}#{dat['url']}", {})
       rescue RestClient::ExceptionWithResponse => e
         puts "Failed #{e}"
       end
-      text_to_write = []
-      Nokogiri::HTML(response).css('blockquote').each do |blockquote|
-        (text_to_write << blockquote.text) if extract_offence_from_html(values, blockquote)
-      end
+      text_to_write = parse_blockquote(response, values)
       write_text_to_file(text_to_write, dat['url'], offence)
+      display_message(dat['url'], 'notice')
     end
   end
 
@@ -73,6 +73,17 @@ class CriminalNoteBookCrawl
     File.open("#{TEXT_PATH}/#{offence}/#{url}.txt", 'w+') do |f|
       text_to_write.each { |element| f.puts(element.to_s) }
     end
+    File.open("#{TEXT_PATH}/#{offence}.txt", 'a') do |f|
+      text_to_write.each { |element| f.puts(element.to_s) }
+    end
+  end
+
+  def parse_blockquote(response, values)
+    text_to_write = []
+    Nokogiri::HTML(response).css('blockquote').each do |blockquote|
+      (text_to_write << blockquote.text) if extract_offence_from_html(values, blockquote.text)
+    end
+    text_to_write
   end
 
   def parse_tables_info(response)
@@ -89,7 +100,7 @@ class CriminalNoteBookCrawl
     table.css('td[1]').zip(table.css('td[2]')).each do |td, td2|
       detail_hash = { offence: td.text.delete("\n").strip, section: td2.text }
       td.css('a').each do |a|
-        a_href = a['href'].split('/').last
+        a_href = a['href'].split('/').last.split('#').first
         detail_hash[:url] = a_href
       end
       details_array << detail_hash
@@ -103,8 +114,9 @@ class CriminalNoteBookCrawl
   end
 
   # This method can be used to extract data from blickquote based on conditions
-  def extract_offence_from_html(values, blockquote)
-    values.map { |value| blockquote.text.include?(value.to_s) }.uniq.all? { |elem| elem == true }
+  def extract_offence_from_html(values, blockquote_text)
+    blockquote_text.gsub!(/[^0-9A-Za-z ]/, '')
+    values.map { |value| blockquote_text.include?(value.to_s) }.uniq.all? { |elem| elem == true }
   end
 
   def create_folders(offence)
@@ -126,6 +138,14 @@ class CriminalNoteBookCrawl
       headers: headers, timeout: 50
     )
     response
+  end
+
+  def display_message(message, flag)
+    if flag == 'notice'
+      puts "[Notice][CAP] Finished processing url ... #{BASE_URL}#{message}"
+    elsif flag == 'status'
+      puts "[Status][CAP] Processing url #{BASE_URL}#{message} now..."
+    end
   end
 end
 
