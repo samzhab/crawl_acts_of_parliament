@@ -1,8 +1,6 @@
+# Copyright (c) 2021 Abin Abraham
 # frozen_string_literal: true
 
-# Copyright (c) 2016 Pete Hanson
-# Important notes
-# Make sure to create directories TEXTs/criminalnotebook and JSONs/criminalnotebook within the root
 # !/usr/bin/env ruby
 require 'json'
 require 'addressable'
@@ -18,8 +16,8 @@ require 'progressbar'
 class CriminalNoteBookCrawl
   BASE_URL = 'http://criminalnotebook.ca/index.php/'
   # This include the list of offences that we are intereseted in
-  # I believe this is is incomplete.Searching summary conviction within the
-  # page opened we get more results than listed
+  # I believe this is is incomplete.
+  # Searching summary conviction within the page opened we get more results than listed
   # The below script uses keywords for extraction.
   LIST = {
     'List_of_Summary_Conviction_Offences'  => ['summary conviction'],
@@ -30,8 +28,7 @@ class CriminalNoteBookCrawl
   TEXT_PATH = 'TEXTs/criminalnotebook'
 
   def start
-    progressbar = ProgressBar.create(title: 'Offences', starting_at: 0,
-      total: LIST.count)
+    progressbar = ProgressBar.create(title: 'Offences', starting_at: 0, total: LIST.count)
     LIST.each do |offence, values|
       create_folders(offence)
       begin
@@ -65,15 +62,13 @@ class CriminalNoteBookCrawl
   private
 
   # This will write the data from table in the format
-  # {:offence=><data_from_table>, section=><as_listed_in_table,
-  # :url=><url_in_the_hyperlink>}.
+  # {:offence=><data_from_table>, section=><as_listed_in_table, :url=><url_in_the_hyperlink>}.
   # For each element in the LIST it create folders with files in it.
   def write_json_to_file(offence, tables_info)
     File.write("#{JSON_PATH}/#{offence}/#{offence}.json", JSON.dump(tables_info))
   end
 
-  # This will write text file with offences matching the listed
-  # values in the LIST hash
+  # This will write text file with offences matching the listed values in the LIST hash
   def write_text_to_file(text_to_write, url, offence)
     File.open("#{TEXT_PATH}/#{offence}/#{url}.txt", 'w+') do |f|
       text_to_write.each { |element| f.puts(element.to_s) }
@@ -94,7 +89,7 @@ class CriminalNoteBookCrawl
     table.css('td[1]').zip(table.css('td[2]')).each do |td, td2|
       detail_hash = { offence: td.text.delete("\n").strip, section: td2.text }
       td.css('a').each do |a|
-        a_href = a['href'].gsub('/index.php/', '').strip
+        a_href = a['href'].split('/').last
         detail_hash[:url] = a_href
       end
       details_array << detail_hash
@@ -112,8 +107,14 @@ class CriminalNoteBookCrawl
   end
 
   def create_folders(offence)
-    Process.spawn("mkdir #{JSON_PATH}/#{offence}")
-    Process.spawn("mkdir #{TEXT_PATH}/#{offence}")
+    [JSON_PATH, TEXT_PATH].each do |path|
+      if Dir.exist?(path.to_s)
+        Process.spawn("rm -rf #{path}/#{offence}") if Dir.exist?("#{path}/#{offence}")
+      else
+        Process.spawn("mkdir #{path}")
+      end
+      Process.spawn("mkdir #{path}/#{offence}")
+    end
   end
 
   def get_request(url, headers)
