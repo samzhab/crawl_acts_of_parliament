@@ -113,6 +113,7 @@ class CriminalNoteBookCrawl
       else
         Process.spawn("mkdir #{path}")
       end
+      sleep 0.2
       Process.spawn("mkdir #{path}/#{offence}")
     end
   end
