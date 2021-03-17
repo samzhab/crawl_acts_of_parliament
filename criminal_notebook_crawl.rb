@@ -102,6 +102,7 @@ class CriminalNoteBookCrawl
     JSON.parse(file)
   end
 
+  # This method can be used to extract data from blickquote based on conditions
   def extract_offence_from_html(values, blockquote)
     values.map { |value| blockquote.text.include?(value.to_s) }.uniq.all? { |elem| elem == true }
   end
