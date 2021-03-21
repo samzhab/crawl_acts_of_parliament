@@ -1,6 +1,7 @@
 # Common configuration.
 AllCops:
   # Include common Ruby source files.
+  NewCops: enable
   Include:
     - '**/*.gemspec'
     - '**/*.podspec'
@@ -58,7 +59,7 @@ AllCops:
   CacheRootDirectory: /tmp
   # What version of the Ruby interpreter is the inspected code intended to
   # run on? (If there is more than one, set this to the lowest version.)
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 3.0
 
 Layout/AccessModifierIndentation:
   Description: Check indentation of private/protected visibility modifiers.
@@ -84,14 +85,14 @@ Style/Alias:
     - prefer_alias_method
 
 
-Layout/AlignArray:
+Layout/ArrayAlignment:
   Description: >-
                  Align the elements of an array literal if they span more than
                  one line.
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#align-multiline-arrays'
   Enabled: true
 
-Layout/AlignHash:
+Layout/HashAlignment:
   Description: >-
                  Align the elements of a hash literal if they span more than
                  one line.
@@ -158,7 +159,7 @@ Layout/AlignHash:
     - ignore_implicit
     - ignore_explicit
 
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   Description: >-
                  Align the parameters of a method call if they span more
                  than one line.
@@ -313,9 +314,9 @@ Layout/BlockEndNewline:
   Description: 'Put end statement of multiline block on its own line.'
   Enabled: true
 
-Style/BracesAroundHashParameters:
-  Description: 'Enforce braces style around hash parameters.'
-  Enabled: true
+# Style/BracesAroundHashParameters:
+#   Description: 'Enforce braces style around hash parameters.'
+#   Enabled: true
 
 Style/CaseEquality:
   Description: 'Avoid explicit use of the case equality operator(===).'
@@ -469,7 +470,7 @@ Style/Copyright:
   Description: 'Include a copyright notice in each file before any code.'
   Enabled: true
   Notice: '(Copyright \(c\) 20\d\d .+|Unknown Copyright)'
-  AutocorrectNotice: '# Copyright (c) 2016 Pete Hanson'
+  AutocorrectNotice: '# Copyright (c) 2021 Samuel Y. Ayele'
 
 Style/DefWithParentheses:
   Description: 'Use def with parentheses when there are arguments.'
@@ -643,7 +644,7 @@ Layout/FirstParameterIndentation:
   Enabled: true
   IndentationWidth: ~
 
-Style/FlipFlop:
+Lint/FlipFlop:
   Description: 'Checks for flip flops'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#no-flip-flops'
   Enabled: true
@@ -703,7 +704,7 @@ Style/IfUnlessModifier:
                  single-line body.
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#if-as-a-modifier'
   Enabled: true
-  MaxLineLength: 80
+# Layout/LineLength:: 80
 
 Style/IfUnlessModifierOfIfUnless:
  Description: >-
@@ -746,7 +747,7 @@ Style/ImplicitRuntimeError:
                  message, rather than just a message.
   Enabled: true
 
-Layout/IndentArray:
+Layout/FirstArrayElementIndentation:
   Description: >-
                  Checks the indentation of the first element in an array
                  literal.
@@ -767,7 +768,7 @@ Layout/IndentArray:
   # But it can be overridden by setting this parameter
   IndentationWidth: ~
 
-Layout/IndentAssignment:
+Layout/AssignmentIndentation:
   Description: >-
                  Checks the indentation of the first line of the
                  right-hand-side of a multi-line assignment.
@@ -776,7 +777,7 @@ Layout/IndentAssignment:
   # But it can be overridden by setting this parameter
   IndentationWidth: ~
 
-Layout/IndentHash:
+Layout/FirstHashElementIndentation:
   Description: 'Checks the indentation of the first key in a hash literal.'
   Enabled: true
   # The value `special_inside_parentheses` means that hash literals with braces
@@ -851,10 +852,10 @@ Style/MethodDefParentheses:
     - require_no_parentheses
     - require_no_parentheses_except_multiline
 
-Style/MethodMissing:
-  Description: 'Avoid using `method_missing`.'
-  StyleGuide: 'https://github.com/samzhab/ruby-style-guide#no-method-missing'
-  Enabled: true
+# Style/MethodMissing:
+#   Description: 'Avoid using `method_missing`.'
+#   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#no-method-missing'
+#   Enabled: true
 
 Naming/MethodName:
   Description: 'Use the configured style when naming methods.'
@@ -864,10 +865,10 @@ Naming/MethodName:
     - snake_case
     - camelCase
 
-Style/ModuleFunction:
-  SupportedStyles:
-    - module_function
-    - extend_self
+# Style/ModuleFunction:
+#   SupportedStyles:
+#     - module_function
+#     - extend_self
 
 Style/MissingElse:
   Description: >-
@@ -1142,13 +1143,13 @@ Naming/PredicateName:
     - has_
     - have_
   # Predicate name prefixes that should be removed.
-  NamePrefixBlacklist:
+  ForbiddenPrefixes:
     - is_
     - has_
     - have_
   # Predicate names which, despite having a blacklisted prefix, or no ?,
   # should still be accepted
-  NameWhitelist:
+  AllowedMethods:
     - is_a?
 
 Style/Proc:
@@ -1379,7 +1380,7 @@ Layout/SpaceInsideBlockBraces:
   # Space between { and |. Overrides EnforcedStyle if there is a conflict.
   SpaceBeforeBlockParameters: true
 
-Layout/SpaceInsideBrackets:
+Layout/SpaceBeforeBrackets:
   Description: 'No spaces after [ or before ].'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#no-spaces-braces'
   Enabled: true
@@ -1487,7 +1488,7 @@ Style/SymbolProc:
   IgnoredMethods:
     - respond_to
 
-Layout/Tab:
+Layout/IndentationStyle:
   Description: 'No hard tabs.'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#spaces-indentation'
   Enabled: true
@@ -1500,7 +1501,7 @@ Style/TernaryParentheses:
     - require_no_parentheses
   AllowSafeAssignment: false
 
-Layout/TrailingBlankLines:
+Layout/TrailingEmptyLines:
   Description: 'Checks trailing blank lines and final newline.'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#newline-eof'
   Enabled: true
@@ -1539,7 +1540,7 @@ Style/TrivialAccessors:
   # Commonly used in DSLs
   AllowDSLWriters: false
   IgnoreClassMethods: false
-  Whitelist:
+  AllowedMethods:
     - to_ary
     - to_a
     - to_c
@@ -1565,15 +1566,15 @@ Style/UnlessElse:
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#no-else-with-unless'
   Enabled: true
 
-Style/UnneededCapitalW:
+Style/RedundantCapitalW:
   Description: 'Checks for %W when interpolation is not needed.'
   Enabled: true
 
-Style/UnneededInterpolation:
+Style/RedundantInterpolation:
   Description: 'Checks for strings that are just an interpolated expression.'
   Enabled: true
 
-Style/UnneededPercentQ:
+Style/RedundantPercentQ:
   Description: 'Checks for %q/%Q when single quotes or double quotes would do.'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#percent-q'
   Enabled: true
@@ -1624,7 +1625,6 @@ Style/WhileUntilModifier:
                  single-line body.
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#while-as-a-modifier'
   Enabled: true
-  MaxLineLength: 80
 
 Style/WordArray:
   Description: 'Use %w or %W for arrays of words.'
@@ -1674,7 +1674,7 @@ Metrics/CyclomaticComplexity:
   Enabled: true
   Max: 6
 
-Metrics/LineLength:
+Layout/LineLength:
   Description: 'Limit lines to 100 characters.'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#80-character-limits'
   Enabled: true
@@ -1728,7 +1728,7 @@ Lint/AssignmentInCondition:
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#safe-assignment-in-condition'
   AllowSafeAssignment: false
 
-Lint/BlockAlignment:
+Layout/BlockAlignment:
   Description: 'Align block ends correctly.'
   Enabled: true
 
@@ -1736,7 +1736,7 @@ Lint/CircularArgumentReference:
   Description: "Default values in optional keyword arguments and optional ordinal arguments should not refer back to the name of the argument."
   Enabled: true
 
-Lint/ConditionPosition:
+Layout/ConditionPosition:
   Description: >-
                  Checks for condition placed in a confusing position relative to
                  the keyword.
@@ -1762,7 +1762,7 @@ Lint/DuplicateMethods:
   Description: 'Check for duplicate method definitions.'
   Enabled: true
 
-Lint/DuplicatedKey:
+Lint/DuplicateHashKey:
   Description: 'Check for duplicate keys in hash literals.'
   Enabled: true
 
@@ -1801,7 +1801,7 @@ Lint/FormatParameterMismatch:
   Description: 'The number of parameters to format/sprint must match the fields.'
   Enabled: true
 
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Description: "Don't suppress exception."
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#dont-hide-exceptions'
   Enabled: true
@@ -1890,7 +1890,7 @@ Lint/ShadowingOuterLocalVariable:
                  for block arguments or block local variables.
   Enabled: true
 
-Lint/StringConversionInInterpolation:
+Lint/RedundantStringCoercion:
   Description: 'Checks for Object#to_s usage in string interpolation.'
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#no-to-s'
   Enabled: true
@@ -1903,14 +1903,14 @@ Lint/UnifiedInteger:
   Description: 'Use Integer instead of Fixnum or Bignum'
   Enabled: true
 
-Lint/UnneededDisable:
+Lint/RedundantCopDisableDirective:
   Description: >-
                  Checks for rubocop:disable comments that can be removed.
                  Note: this cop is not disabled when disabling all cops.
                  It must be explicitly disabled.
   Enabled: true
 
-Lint/UnneededSplatExpansion:
+Lint/RedundantSplatExpansion:
   Description: 'Checks for splat unnecessarily being called on literals'
   Enabled: true
 
@@ -1941,7 +1941,7 @@ Lint/UselessAssignment:
   StyleGuide: 'https://github.com/samzhab/ruby-style-guide#underscore-unused-vars'
   Enabled: true
 
-Lint/UselessComparison:
+Lint/BinaryOperatorWithIdenticalOperands:
   Description: 'Checks for comparison of something with itself.'
   Enabled: true
 
@@ -1956,283 +1956,6 @@ Lint/UselessSetterCall:
 Lint/Void:
   Description: 'Possible use of operator/literal/variable in void context.'
   Enabled: true
-
-##################### Performance ##################################
-
-Performance/Casecmp:
-  Description: 'Use `casecmp` rather than `downcase ==`.'
-  Reference: 'https://github.com/samzhab/fast-ruby#stringcasecmp-vs-stringdowncase---code'
-  Enabled: false
-
-Performance/CaseWhenSplat:
-  Description: >-
-                  Place `when` conditions that use splat at the end
-                  of the list of `when` branches.
-  Enabled: true
-
-Performance/Count:
-  Description: >-
-                  Use `count` instead of `select...size`, `reject...size`,
-                  `select...count`, `reject...count`, `select...length`,
-                  and `reject...length`.
-  # This cop has known compatibility issues with `ActiveRecord` and other
-  # frameworks. ActiveRecord's `count` ignores the block that is passed to it.
-  # For more information, see the documentation in the cop itself.
-  # If you understand the known risk, you can disable `SafeMode`.
-  SafeMode: true
-  Enabled: true
-
-Performance/Detect:
-  Description: >-
-                  Use `detect` instead of `select.first`, `find_all.first`,
-                  `select.last`, and `find_all.last`.
-  Reference: 'https://github.com/samzhab/fast-ruby#enumerabledetect-vs-enumerableselectfirst-code'
-  Enabled: true
-
-Performance/DoubleStartEndWith:
-  Description: >-
-                  Use `str.{start,end}_with?(x, ..., y, ...)`
-                  instead of `str.{start,end}_with?(x, ...) || str.{start,end}_with?(y, ...)`.
-  Enabled: true
-
-Performance/EndWith:
-  Description: 'Use `end_with?` instead of a regex match anchored to the end of a string.'
-  Reference: 'https://github.com/samzhab/fast-ruby#stringmatch-vs-stringstart_withstringend_with-code-start-code-end'
-  Enabled: true
-
-Performance/FixedSize:
-  Description: 'Do not compute the size of statically sized objects except in constants'
-  Enabled: true
-
-Performance/FlatMap:
-  Description: >-
-                  Use `Enumerable#flat_map`
-                  instead of `Enumerable#map...Array#flatten(1)`
-                  or `Enumberable#collect..Array#flatten(1)`
-  Reference: 'https://github.com/samzhab/fast-ruby#enumerablemaparrayflatten-vs-enumerableflat_map-code'
-  Enabled: true
-  EnabledForFlattenWithoutParams: false
-  # If enabled, this cop will warn about usages of
-  # `flatten` being called without any parameters.
-  # This can be dangerous since `flat_map` will only flatten 1 level, and
-  # `flatten` without any parameters can flatten multiple levels.
-
-Performance/HashEachMethods:
-  Description: >-
-                 Use `Hash#each_key` and `Hash#each_value` instead of
-                 `Hash#keys.each` and `Hash#values.each`.
-  StyleGuide: 'https://github.com/samzhab/ruby-style-guide#hash-each'
-  Enabled: true
-  AutoCorrect: false
-
-Performance/LstripRstrip:
-  Description: 'Use `strip` instead of `lstrip.rstrip`.'
-  Enabled: true
-
-Performance/RangeInclude:
-  Description: 'Use `Range#cover?` instead of `Range#include?`.'
-  Reference: 'https://github.com/samzhab/fast-ruby#cover-vs-include-code'
-  Enabled: true
-
-Performance/RedundantBlockCall:
-  Description: 'Use `yield` instead of `block.call`.'
-  Reference: 'https://github.com/samzhab/fast-ruby#proccall-vs-yield-code'
-  Enabled: true
-
-Performance/RedundantMatch:
-  Description: >-
-                  Use `=~` instead of `String#match` or `Regexp#match` in a context where the
-                  returned `MatchData` is not needed.
-  Enabled: true
-
-Performance/RedundantMerge:
-  Description: 'Use Hash#[]=, rather than Hash#merge! with a single key-value pair.'
-  Reference: 'https://github.com/samzhab/fast-ruby#hashmerge-vs-hash-code'
-  Enabled: true
-
-Performance/RedundantSortBy:
-  Description: 'Use `sort` instead of `sort_by { |x| x }`.'
-  Enabled: true
-
-Performance/ReverseEach:
-  Description: 'Use `reverse_each` instead of `reverse.each`.'
-  Reference: 'https://github.com/samzhab/fast-ruby#enumerablereverseeach-vs-enumerablereverse_each-code'
-  Enabled: true
-
-Performance/Sample:
-  Description: >-
-                  Use `sample` instead of `shuffle.first`,
-                  `shuffle.last`, and `shuffle[Integer]`.
-  Reference: 'https://github.com/samzhab/fast-ruby#arrayshufflefirst-vs-arraysample-code'
-  Enabled: true
-
-Performance/Size:
-  Description: >-
-                  Use `size` instead of `count` for counting
-                  the number of elements in `Array` and `Hash`.
-  Reference: 'https://github.com/samzhab/fast-ruby#arraycount-vs-arraysize-code'
-  Enabled: true
-
-Performance/StartWith:
-  Description: 'Use `start_with?` instead of a regex match anchored to the beginning of a string.'
-  Reference: 'https://github.com/samzhab/fast-ruby#stringmatch-vs-stringstart_withstringend_with-code-start-code-end'
-  Enabled: true
-
-Performance/StringReplacement:
-  Description: >-
-                  Use `tr` instead of `gsub` when you are replacing the same
-                  number of characters. Use `delete` instead of `gsub` when
-                  you are deleting characters.
-  Reference: 'https://github.com/samzhab/fast-ruby#stringgsub-vs-stringtr-code'
-  Enabled: true
-
-Performance/TimesMap:
-  Description: 'Checks for .times.map calls.'
-  Enabled: true
-
-##################### Rails ##################################
-
-# By default, the rails cops are not run. Override in project or home
-# directory .rubocop.yml files, or by giving the -R/--rails option.
-Rails:
-  Enabled: false
-
-Rails/ActionFilter:
-  Description: 'Enforces consistent use of action filter methods.'
-  Enabled: true
-  SupportedStyles:
-    - action
-    - filter
-  Include:
-    - app/controllers/**/*.rb
-
-Rails/Date:
-  Description: >-
-                  Checks the correct usage of date aware methods,
-                  such as Date.today, Date.current etc.
-  Enabled: true
-  # The value `strict` disallows usage of `Date.today`, `Date.current`,
-  # `Date#to_time` etc.
-  # The value `flexible` allows usage of `Date.current`, `Date.yesterday`, etc
-  # (but not `Date.today`) which are overriden by ActiveSupport to handle current
-  # time zone.
-  SupportedStyles:
-    - strict
-    - flexible
-
-Rails/Delegate:
-  Description: 'Prefer delegate method for delegations.'
-  Enabled: true
-
-Rails/Exit:
-  Description: >-
-                  Favor `fail`, `break`, `return`, etc. over `exit` in
-                  application or library code outside of Rake files to avoid
-                  exits during unit testing or running in production.
-  Enabled: true
-  Include:
-    - app/**/*.rb
-    - config/**/*.rb
-    - lib/**/*.rb
-  Exclude:
-    - lib/**/*.rake
-
-Rails/FindBy:
-  Description: 'Prefer find_by over where.first.'
-  StyleGuide: 'https://github.com/samzhab/rails-style-guide#find_by'
-  Enabled: true
-  Include:
-    - app/models/**/*.rb
-
-Rails/FindEach:
-  Description: 'Prefer all.find_each over all.find.'
-  StyleGuide: 'https://github.com/samzhab/rails-style-guide#find-each'
-  Enabled: true
-  Include:
-    - app/models/**/*.rb
-
-Rails/HasAndBelongsToMany:
-  Description: 'Prefer has_many :through to has_and_belongs_to_many.'
-  StyleGuide: 'https://github.com/samzhab/rails-style-guide#has-many-through'
-  Enabled: true
-  Include:
-    - app/models/**/*.rb
-
-Rails/NotNullColumn:
-  Description: 'Do not add a NOT NULL column without a default value'
-  Enabled: true
-  Include:
-    - db/migrate/*.rb
-
-Rails/Output:
-  Description: 'Checks for calls to puts, print, etc.'
-  Enabled: true
-  Include:
-    - app/**/*.rb
-    - config/**/*.rb
-    - db/**/*.rb
-    - lib/**/*.rb
-
-Rails/OutputSafety:
-  Description: 'The use of `html_safe` or `raw` may be a security risk.'
-  Enabled: true
-
-Rails/PluralizationGrammar:
-  Description: 'Checks for incorrect grammar when using methods like `3.day.ago`.'
-  Enabled: true
-
-Rails/ReadWriteAttribute:
-  Description: >-
-                 Checks for read_attribute(:attr) and
-                 write_attribute(:attr, val).
-  StyleGuide: 'https://github.com/samzhab/rails-style-guide#read-attribute'
-  Enabled: true
-  Include:
-    - app/models/**/*.rb
-
-Rails/RequestReferer:
-  SupportedStyles:
-    - referer
-    - referrer
-  Description: 'Use consistent syntax for request.referer.'
-  Enabled: true
-
-Rails/SafeNavigation:
-  Description: "Use Ruby's safe navigation operator (`&.`) instead of `try!`"
-  Enabled: true
-  # This will convert usages of `try` to use safe navigation as well as `try!`.
-  # `try` and `try!` work slighly differently. `try!` and safe navigation will
-  # both raise a `NoMethodError` if the receiver of the method call does not
-  # implement the intended method. `try` will not raise an exception for this.
-  ConvertTry: false
-
-Rails/SaveBang:
- Description: 'Identifies possible cases where Active Record save! or related should be used.'
- StyleGuide: 'https://github.com/samzhab/rails-style-guide#save-bang'
- Enabled: true
-
-Rails/ScopeArgs:
-  Description: 'Checks the arguments of ActiveRecord scopes.'
-  Enabled: true
-  Include:
-    - app/models/**/*.rb
-
-Rails/TimeZone:
-  Description: 'Checks the correct usage of time zone aware methods.'
-  StyleGuide: 'https://github.com/samzhab/rails-style-guide#time'
-  Reference: 'http://danilenko.org/2012/7/6/rails_timezones'
-  Enabled: true
-  # The value `strict` means that `Time` should be used with `zone`.
-  # The value `flexible` allows usage of `in_time_zone` instead of `zone`.
-  SupportedStyles:
-    - strict
-    - flexible
-
-Rails/Validation:
-  Description: 'Use validates :attribute, hash of validations.'
-  Enabled: true
-  Include:
-    - app/models/**/*.rb
 
 Security/JSONLoad:
   Description : 'Prefer usage of JSON.parse'
