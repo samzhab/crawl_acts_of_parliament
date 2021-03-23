@@ -1,4 +1,3 @@
-
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
@@ -8,12 +7,13 @@ end
 gem 'addressable'
 gem 'byebug'
 gem 'json'
-#gem 'pdfkit'
 gem 'rest-client'
 gem 'rubocop'
 gem 'wkhtmltopdf'
 gem "nokogiri"
-#gem 'csv'
+gem 'rubocop-performance'
+gem 'rubocop-rails'
 gem 'webmock'
 gem 'down'
 gem 'fileutils'
+gem 'yaml'
