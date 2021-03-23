@@ -44,6 +44,28 @@ module CrawlerHelper
       Process.spawn("mkdir #{path}/#{offence}")
     end
   end
+
+  def read_data_from_file(path)
+    file = File.read(path)
+    JSON.parse(file)
+  end
+
+  def get_request(url, headers)
+    RestClient::Request.execute(
+      method: :get,
+      url: Addressable::URI.parse(url).normalize.to_str,
+      headers: headers, timeout: 50
+    )
+  end
+
+  def display_message(message, flag)
+    case flag
+    when 'notice'
+      puts "[Notice][CAP] Finished processing url ... #{self.class::BASE_URL}#{message}"
+    when 'status'
+      puts "[Status][CAP] Processing url #{self.class::BASE_URL}#{message} now..."
+    end
+  end
 end
 
 class CriminalNoteBookCrawl
@@ -56,7 +78,7 @@ class CriminalNoteBookCrawl
   LIST = {
     'List_of_Summary_Conviction_Offences'  => ['summary conviction'],
     'List_of_Straight_Indictable_Offences' => ['indictable offence'],
-    'List_of_Hybrid_Offences'              => ['hybrid']
+    'List_of_Hybrid_Offences'              => %w(hybrid)
   }.freeze
   JSON_PATH = 'JSONs/criminalnotebook'
   TEXT_PATH = 'TEXTs/criminalnotebook'
@@ -82,6 +104,7 @@ class CriminalNoteBookCrawl
     used_urls = []
     read_data_from_file("#{JSON_PATH}/#{offence}/#{offence}.json").each do |dat|
       next if used_urls.include?(dat['url'])
+
       used_urls << dat['url']
       display_message(dat['url'], 'status')
       begin
@@ -127,69 +150,61 @@ class CriminalNoteBookCrawl
     table.css('td[1]').zip(table.css('td[2]'),
                            table.css('td[3]'),
                            table.css('td[4]'),
-                           table.css('td[5]')).each do |td, td2, td3, td4, td5|
-      detail_hash = fetch_based_on_offence(td, td2, td3, td4, td5)
+                           table.css('td[5]')).each do |td1, td2, td3, td4, td5|
+      detail_hash = fetch_based_on_offence(td1, td2, td3, td4, td5)
       detail_hash[:punishment] = heading
-      td.css('a').each do |a|
-        a_href = a['href'].split('/').last.split('#').first
-        detail_hash[:url] = a_href
-      end
+      detail_hash[:url] = parse_from_column(td1)
       details_array << detail_hash
     end
     details_array
   end
 
-  def fetch_based_on_offence(td, td2, td3, td4, td5)
-    general_data = { offence: td.text.delete("\n").strip.gsub('From', ' From'),
+  def parse_from_column(td1)
+    td1.css('a').map { |a| a['href'].split('/').last.split('#').first }.last
+  end
+
+  def fetch_based_on_offence(td1, td2, td3, td4, td5)
+    general_data = { offence: td1.text.delete("\n").strip.gsub('From', ' From'),
                      section: td2.text.delete("\n").strip }
+
     case @offence
     when 'List_of_Summary_Conviction_Offences'
-      general_data[:maximum_fine],
-      general_data[:minimums],
-      general_data[:consecutive_time] = key_infos([td3, td4, td5])
+      data_for_summary(general_data, [td3, td4, td5])
     when 'List_of_Straight_Indictable_Offences'
-      general_data[:minimums],
-      general_data[:mandatory_consecutive_time] = key_infos([td3, td4])
+      data_for_indictable(general_data, [td3, td4])
     when 'List_of_Hybrid_Offences'
-      general_data[:minimums],
-      general_data[:summary_election_maximum],
-      general_data[:consecutive_time] = key_infos([td3, td4, td5])
+      data_for_hybrid(general_data, [td3, td4, td5])
     else
       {}
     end
     general_data
   end
 
-  def key_infos(cols)
-    cols.map { |col| col.text.delete("\n").strip }
+  def data_for_summary(general_data, cols)
+    general_data[:maximum_fine],
+    general_data[:minimums],
+    general_data[:consecutive_time] = key_infos(cols)
   end
 
-  def read_data_from_file(path)
-    file = File.read(path)
-    JSON.parse(file)
+  def data_for_indictable(general_data, cols)
+    general_data[:minimums],
+    general_data[:mandatory_consecutive_time] = key_infos(cols)
+  end
+
+  def data_for_hybrid(general_data, cols)
+    general_data[:minimums],
+    general_data[:summary_election_maximum],
+    general_data[:consecutive_time] = key_infos(cols)
+  end
+
+  def key_infos(cols)
+    cols.map { |col| col.text.delete("\n").strip }
   end
 
   # This method can be used to extract data from blickquote based on conditions
   def extract_offence_from_html(values, blockquote_text)
     blockquote_text.gsub!(/[^0-9A-Za-z ]/, '')
     values.map { |value| blockquote_text.include?(value.to_s) }.uniq.all? { |elem| elem == true }
-  end
-
-  def get_request(url, headers)
-    response = RestClient::Request.execute(
-      method: :get,
-      url: Addressable::URI.parse(url).normalize.to_str,
-      headers: headers, timeout: 50
-    )
-    response
-  end
-
-  def display_message(message, flag)
-    if flag == 'notice'
-      puts "[Notice][CAP] Finished processing url ... #{BASE_URL}#{message}"
-    elsif flag == 'status'
-      puts "[Status][CAP] Processing url #{BASE_URL}#{message} now..."
-    end
   end
 end
 
