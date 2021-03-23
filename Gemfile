@@ -1,4 +1,6 @@
+# frozen_string_literal: true
 
+# Copyright (c) 2021 Samuel Y. Ayele
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
@@ -7,14 +9,15 @@ git_source(:github) do |repo_name|
 end
 gem 'addressable'
 gem 'byebug'
-gem 'json'
-#gem 'pdfkit'
-gem 'rest-client'
-gem 'rubocop'
-gem 'wkhtmltopdf'
-gem "nokogiri"
-#gem 'csv'
-gem 'webmock'
 gem 'down'
 gem 'fileutils'
+gem 'json'
+gem 'nokogiri'
 gem 'progressbar'
+gem 'rest-client'
+gem 'rubocop'
+gem 'rubocop-performance'
+gem 'rubocop-rails'
+gem 'webmock'
+gem 'wkhtmltopdf'
+gem 'yaml'
