@@ -42,20 +42,20 @@ class GenerateTimeline
     # "#{act[name]} #{act[category]} #{code} "\
     # "has regulations - #{has_regulations} "
 
-  # title: "Consolidated Acts of Parliament"
-  # show_today: true
-  # periods:
-  #   - name: 2000's
-  #   - acts:
-  #     - December 2002: Canada Business Corporations Act
-  #     - August 2008:  International Boundary Waters Treaty Act
-  #   - name: 2010's
-  #     acts:
-  #     - June 2010: National Library Act [Re…d,  2004, c. 11, s. 56]
-  #   - name: 2020's
-  #     acts:
-  #     - July 2020: Referendum Act
-  
+    # title: "Consolidated Acts of Parliament"
+    # show_today: true
+    # periods:
+    #   - name: 2000's
+    #   - acts:
+    #     - December 2002: Canada Business Corporations Act
+    #     - August 2008:  International Boundary Waters Treaty Act
+    #   - name: 2010's
+    #     acts:
+    #     - June 2010: National Library Act [Red,  2004, c. 11, s. 56]
+    #   - name: 2020's
+    #     acts:
+    #     - July 2020: Referendum Act
+
     #   ...     ...     ...     ...
     #   - name: 2020's
     #   - acts:
