@@ -13,55 +13,41 @@ class GenerateTimeline
   LETTERS = %w(A B C D E F G H I J K
                L M N O P Q R S T U V W X Y Z).freeze
   def generate
-    return unless File.exist?('JSONs/all_parliament_acts.json')
+    puts 'File not found' and return unless File.exist?(
+      'JSONs/all_parliament_acts.json'
+    )
 
-    # acts = {}
-    LETTERS.each do |letter|
-      # create an array to hold all acts starting with A
-      # open 'A' acts json file, loop through acts
-      # array it out hash it out with key (letter, century, decade) array it out
-      # an Array named A[] holds {:1960sA => [act1,act2,act34,act23],
-      # :1970sA => [act5, act3, act23]}
-      json_data = JSON.parse(File.read("JSONs/#{letter}/#{letter}_parliament_acts.json"))
-      # interesting_acts = []
+    json_data = JSON.parse(File.read('JSONs/all_parliament_acts.json'))
+    sorted_json = json_data.group_by { |h| h['year'] }.sort.to_h
+    formatted_json = { 'title' => 'Consolidated Acts of Parliament',
+                      'show_today' => true, 'periods' => {} }
+    formatted_json = process_sorted_json(formatted_json, sorted_json)
+    write_to_yaml_file(formatted_json)
+  end
 
-      CENTURIES.each do |_century|
-        DECADES.each do |_decade|
-          json_data.each do |act|
-            # target_year = "#{century}#{decade}"
-            # interesting_acts << act if act['year'][/target_year/]
-            # create an empty hash
-            # for each century+decade, loop through acts and grab act hash
-            # with key matching century+decade
-            # if year on act matches current century+decade in loop collect it
-          end
-        end
-      end
+  def process_sorted_json(formatted_json, sorted_json)
+    sorted_json.each do |year, acts|
+      decade = ((year.to_i / 10).to_i * 10)
+      next if decade.zero?
+
+      formatted_json['periods'] = format_json_by_decade(formatted_json['periods'], decade, acts)
     end
-    # json_data.each do |_act|
-    # "#{act[name]} #{act[category]} #{code} "\
-    # "has regulations - #{has_regulations} "
+    formatted_json
+  end
 
-    # title: "Consolidated Acts of Parliament"
-    # show_today: true
-    # periods:
-    #   - name: 2000's
-    #   - acts:
-    #     - December 2002: Canada Business Corporations Act
-    #     - August 2008:  International Boundary Waters Treaty Act
-    #   - name: 2010's
-    #     acts:
-    #     - June 2010: National Library Act [Red,  2004, c. 11, s. 56]
-    #   - name: 2020's
-    #     acts:
-    #     - July 2020: Referendum Act
+  def format_json_by_decade(formatted_json, decade, acts)
+    if formatted_json[decade].nil?
+      formatted_json[decade] = {}
+      formatted_json[decade]['acts'] = [acts]
+    else
+      formatted_json[decade]['acts'] << acts
+    end
+    formatted_json[decade]['acts'].flatten!
+    formatted_json.sort.to_h
+  end
 
-    #   ...     ...     ...     ...
-    #   - name: 2020's
-    #   - acts:
-    #     - July 2020: "#{act[name]} #{act[category]} #{code} "\
-    #     "has regulations - #{has_regulations} "
-    # end
+  def write_to_yaml_file(formatted_json)
+    File.open('YAMLs/all_parliament_acts.yml', 'w') { |file| file.write(formatted_json.to_yaml) }
   end
 end
 timeliner = GenerateTimeline.new
