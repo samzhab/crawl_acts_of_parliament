@@ -9,46 +9,55 @@ require 'byebug'
 require 'nokogiri'
 require 'csv'
 require 'down'
-# require "webmock"
 require 'fileutils'
-# url = "#{base_url}#{acts_uri}Y.html"
-
-# include WebMock::API
-# WebMock.enable!
 # ------------------------------------------------------------------------------
 class CapCrawl
-  LETTERS = %w(A B C D E F G H I J K
-               L M N O P Q R S T U V W X Y Z).freeze
+  LETTERS = %w(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z).freeze
 
   BASE_URL = 'https://laws-lois.justice.gc.ca/'
   ACTS_URL = 'eng/acts/'
 
-  def start
+  def crawl
     all_acts = []
+    create_folders
     LETTERS.each do |index|
       index_acts = []
-      create_folders(index)
+      create_index_folders(index)
       begin
         response = get_request("#{BASE_URL}#{ACTS_URL}#{index}.html", {})
       rescue RestClient::ExceptionWithResponse => e
         display_error(e, "#{BASE_URL}#{ACTS_URL}#{index}.html")
       end
-      Nokogiri::HTML(response).css('.wet-boew-zebra').children.each do |act|
-        next if act.children.count < 1
-
-        act_details = get_details(act)
-        index_acts << act_details
-        all_acts << act_details
-        write_one_to_file(index_acts, index, act_details)
-      end
+      targeted_acts_content = target_acts_content(response)
+      act_details = extract_acts_details(targeted_acts_content, index_acts, index)
+      all_acts << act_details
+      write_one_to_file(index_acts, index, act_details)
     end
     write_all_to_file(all_acts)
   end
 
-  def create_folders(index)
-    Process.spawn("mkdir PDFs/#{index}")
-    Process.spawn("mkdir JSONs/#{index}")
-    Process.spawn("mkdir HTMLs/#{index}")
+  def extract_acts_details(targeted_acts_content, index_acts, _index)
+    act_details = {}
+    targeted_acts_content.children.each do |act|
+      next if act.children.count < 1
+
+      act_details = get_details(act)
+      index_acts << act_details
+    end
+    act_details
+  end
+
+  def target_acts_content(response)
+    Nokogiri::HTML(response).css('.wet-boew-zebra')
+  end
+
+  def create_folders
+    Process.spawn('mkdir PDFs && mkdir JSONs && mkdir HTMLs')
+    # Process.spawn("mkdir XMLs")
+  end
+
+  def create_index_folders(index)
+    Process.spawn("mkdir PDFs/#{index} && mkdir JSONs/#{index} && mkdir HTMLs/#{index}")
     # Process.spawn("mkdir XMLs/#{index}")
   end
 
@@ -80,12 +89,8 @@ class CapCrawl
   end
 
   def display_message(act_details, flag)
-    case flag
-    when 'notice'
-      puts "[Notice][CAP] Finished processing ... #{act_details[:name]}"
-    when 'status'
-      puts "[Status][CAP] Processing #{act_details[:name]} now..."
-    end
+    puts "[Notice][CAP] Finished processing ... #{act_details[:name]}" if flag == 'notice'
+    puts "[Status][CAP] Processing #{act_details[:name]} now..." if flag == 'status'
   end
 
   def display_error(error, url)
@@ -103,21 +108,15 @@ class CapCrawl
     Process.spawn("mv HTMLs/down\*.html HTMLs/#{index}/#{act_details[:uri].split('/')[0]}.html")
   end
 
-  # def get_xml_file(act_details, index)
-  #   Down.download("#{BASE_URL}/eng/XML/#{act_details[:uri].split('/')[0]}.xml",
-  #                 destination: "XMLs/")
-  #   Process.spawn("mv XMLs/down\*.xml XMLs/#{index}/#{act_details[:uri].split('/')[0]}.xml")
-  # end
-
   def get_cyc_details(act)
     cyc_details = { category: '', year: '', code: '' }
-    target_content2 = act.children[2].content.strip
-    target_content4 = act.children[4].content.strip
-    return cyc_details unless target_content2[/\d+/] || target_content4[/\d+/]
+    return cyc_details unless act.text[/\d\d\d\d/]
 
     if act.children.count < 5
+      target_content2 = act.children[2].content.strip
       extract_details(target_content2, cyc_details)
     else
+      target_content4 = act.children[4].content.strip
       extract_details(target_content4, cyc_details)
     end
     cyc_details
@@ -137,16 +136,23 @@ class CapCrawl
 
   def extract_one_comma_coding(cyc_details, content)
     # S.C. 1979, c. 7, S.C. 1979, c. 7,  R.S.C. 1979, c. 7 (sometimes)
+    content = content[/\n.+/].strip
+    cyc_details[:year] = content[/\d\d\d\d+/] # eg. 1979
+    cyc_details[:category] = content[/S\.C\.|R\.S\.C\./] # eg. R.S.C. or S.C.
     cyc_details[:code] = content.strip.split(',')[1].strip # eg. c. A-5, A-14
-    cyc_details[:category] = content.split[3].strip # eg. R.S.C. or S.C.
-    cyc_details[:year] = content.split[4][/[0-9]+/] # eg. 1979
   end
 
   def extract_two_comma_coding(cyc_details, content)
-    # R.S.C., 1979, c. 7
-    cyc_details[:category] = content.strip.split(',')[0].split("\n")[1]
-    cyc_details[:year] = content.strip.split(',')[1].strip # 2017, 2014
-    cyc_details[:code] = content.strip.split(',')[2].strip # eg. c. A-5, A-14
+    content = content[/\n.+/].strip
+    cyc_details[:year] = content[/\d\d\d\d+/] # eg. 1979
+    cyc_details[:category] = content[/S\.C\.|R\.S\.C\./] # eg. R.S.C. or S.C.
+    splitted_details = content.split(',')
+    cyc_details[:code] =
+      if splitted_details[0][/\d\d\d\d/]
+        content.split(',')[1..2].join(',').strip
+      else
+        content.split(',')[2].strip # eg. c. A-5, A-14
+      end
   end
 
   def get_more_details(act)
@@ -165,6 +171,3 @@ class CapCrawl
                                 timeout: 50)
   end
 end
-
-cap_crawl = CapCrawl.new
-cap_crawl.start
