@@ -171,3 +171,6 @@ class CapCrawl
                                 timeout: 50)
   end
 end
+
+# bc_cap_crawler = CapCrawl.new
+# bc_cap_crawler.crawl
