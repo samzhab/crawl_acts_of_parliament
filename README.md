@@ -11,11 +11,10 @@ Prerequisites:
 
 Webmock and Stubbing http requests:
 * you can stub your http requests using webmock for testing
-* create the following folders `$ mkdir JSONs && mkdir PDFs && webmocks`
 * run the bash script `$ ./curl_get_stubs.sh`
 * add following lines begining of 'LETTERS' loop `body = File.read("webmocks/#{index}.html")`
 * read your files with `body = File.read("webmocks/#{index}.html")`
-* stub your http requests (add below previous line) 
+* stub your http requests (add next to previous line)
           ```stub_request(:get, url).
             with(headers: {
               'Accept'=>'*/*',
@@ -25,7 +24,7 @@ Webmock and Stubbing http requests:
             }).to_return(status: 200, body: body, headers: {})
         ```
 
-        
+
 Features to add [coming soon...]
 * extract other relevant information such as last updated and date of ascentamong others
 
@@ -63,5 +62,3 @@ This work is licensed under a
 [cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
 [cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
 [cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
-
-
