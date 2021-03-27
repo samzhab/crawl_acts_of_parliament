@@ -50,5 +50,5 @@ class GenerateTimeline
     File.open('YAMLs/all_parliament_acts.yml', 'w') { |file| file.write(formatted_json.to_yaml) }
   end
 end
-timeliner = GenerateTimeline.new
-timeliner.generate
+# timeliner = GenerateTimeline.new
+# timeliner.generate
