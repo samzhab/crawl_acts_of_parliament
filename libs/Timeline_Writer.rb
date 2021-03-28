@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
-require "json"
-require "byebug"
+# frozen_string_literal: true
+
+# Copyright (c) 2021 Samuel Y. Ayele
+require 'json'
+require 'byebug'
 
 # ------------------------------------------------------------------------------
 
@@ -9,16 +12,17 @@ class TimelineWriter
     total_xml_count = 0
     timeline_file = create_timeline_file
     acts_hash = open_json_file
-    display_message(acts_hash, "count")
+    display_message(acts_hash, 'count')
     acts_hash.each do |act|
-      next unless act["year"][/\d\d\d\d/]
-      display_message(act, "status")
+      next unless act['year'][/\d\d\d\d/]
+
+      display_message(act, 'status')
       add_to_timeline_file(timeline_file, act)
-      display_message(act, "notice")
+      display_message(act, 'notice')
       total_xml_count += 1
     end
     close_timeline_file(timeline_file)
-    puts "[Create Timeline] All acts mapped."
+    puts '[Create Timeline] All acts mapped.'
     display_saved_timeline_xml(acts_hash.count, total_xml_count)
     # ('A'..'Z').each do |letter|
     #   byebug
@@ -47,12 +51,12 @@ class TimelineWriter
   end
 
   def open_json_file
-    json_file = File.read("JSONs/all_parliament_acts.json")
+    json_file = File.read('JSONs/all_parliament_acts.json')
     JSON.parse(json_file)
   end
 
   def create_timeline_file
-    file = File.open("Acts_of_Parliament.timeline", "w")
+    file = File.open('Acts_of_Parliament.timeline', 'w')
     file.write("<?xml version='1.0' encoding='utf-8'?>\n<timeline>"\
       "\n\t<version>2.3.1 (b518d5113b65 2020-11-12)</version>"\
       "\n\t<timetype>gregoriantime</timetype>"\
@@ -77,11 +81,12 @@ class TimelineWriter
   end
 
   def display_message(act, flag)
-    if flag == "notice"
+    case flag
+    when 'notice'
       puts "[Notice][Create Timeline] Finished processing ... #{act['name']}"
-    elsif flag == "status"
+    when 'status'
       puts "[Status][Create Timeline] Processing #{act['name']} now..."
-    elsif flag == "count_json_resource"
+    when 'count_json_resource'
       puts "[Status][Create Timeline] Retrieved total #{act.count} now..."
     end
   end
