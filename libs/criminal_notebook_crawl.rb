@@ -26,17 +26,23 @@ module CrawlerHelper
   # This will write text file with offences matching the listed values in the LIST hash
   def write_text_to_file(text_to_write, url, offence)
     File.open("#{self.class::TEXT_PATH}/#{offence}/#{url}.txt", 'w+') do |f|
-      text_to_write.each { |element| f.puts(element.to_s) }
+      text_to_write.each do |element|
+        f.puts(element.to_s)
+        f.close
+      end
     end
     File.open("#{self.class::TEXT_PATH}/#{offence}.txt", 'a') do |f|
-      text_to_write.each { |element| f.puts(element.to_s) }
+      text_to_write.each do |element|
+        f.puts(element.to_s)
+        f.close
+      end
     end
   end
 
   def create_folders(offence)
     [self.class::JSON_PATH, self.class::TEXT_PATH].each do |path|
       if Dir.exist?(path.to_s)
-        Process.spawn("rm -rf #{path}/#{offence}") if Dir.exist?("#{path}/#{offence}")
+        # Process.spawn("rm -rf #{path}/#{offence}") if Dir.exist?("#{path}/#{offence}")
       else
         Process.spawn("mkdir #{path}")
       end

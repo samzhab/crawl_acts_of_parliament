@@ -29,7 +29,6 @@ class GenerateTimeline
     sorted_json.each do |year, acts|
       decade = ((year.to_i / 10).to_i * 10)
       next if decade.zero?
-
       formatted_json['periods'] = format_json_by_decade(formatted_json['periods'], decade, acts)
     end
     formatted_json
@@ -47,7 +46,10 @@ class GenerateTimeline
   end
 
   def write_to_yaml_file(formatted_json)
-    File.open('YAMLs/all_parliament_acts.yml', 'w') { |file| file.write(formatted_json.to_yaml) }
+    File.open('YAMLs/all_parliament_acts.yml', 'w') { |file|
+      file.write(formatted_json.to_yaml)
+      file.close
+    }
   end
 end
 # timeliner = GenerateTimeline.new

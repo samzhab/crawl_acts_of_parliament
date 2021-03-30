@@ -42,28 +42,22 @@ class GenerateTimelineTest < Test::Unit::TestCase
     assert_true response == expected_response
   end
 
-  # write out these tests
-  # def test_create_timeline_file
+  def test_format_json_by_decade
+    expected_json = { 1870 =>
+                              { 'acts' =>
+                                          [{ 'name' => 'Works on the Ottawa River' }] } }
+    timeliner = GenerateTimeline.new
+    acts = { 'name' => 'Works on the Ottawa River' }
+    response = timeliner.format_json_by_decade({}, 1870, acts)
+    assert_true response == expected_json
+  end
 
-  # end
-
-  # def test_add_to_timeline_file
-
-  # end
-
-  # def test_open_json_file
-
-  # end
-
-  # def test_display_message
-
-  # end
-
-  # def test_display_saved_timeline_xml
-
-  # end
-
-  # def test_display_error
-
-  # end
+  def test_write_to_yaml_file
+    formatted_json = { 1870 =>
+                              { 'acts' =>
+                                          [{ 'name' => 'Works on the Ottawa River' }] } }
+    timeliner = GenerateTimeline.new
+    response = timeliner.write_to_yaml_file(formatted_json)
+    assert_equal response, nil
+  end
 end

@@ -15,7 +15,7 @@ require_relative '../libs/criminal_notebook_crawl'
 
 include WebMock::API
 WebMock.enable!
-class CriminalNotebookCrawlTest < Test::Unit::TestCase
+class CriminalNotebookCrawl1Test < Test::Unit::TestCase
   BASE_URL = 'http://criminalnotebook.ca/index.php/'
 
   LIST = {
@@ -114,34 +114,9 @@ class CriminalNotebookCrawlTest < Test::Unit::TestCase
       assert_false !values.all? { |val| text.downcase.include?(val) }
     end
   end
+end
 
-  def test_headings_for_tables
-    notebook_crawl = CriminalNoteBookCrawl.new
-    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
-    headings_for_tables = notebook_crawl.headings_for_tables(response)
-    assert_true headings_for_tables.is_a?(Array)
-    assert_true headings_for_tables.count.positive?
-  end
-
-  def test_process_table
-    notebook_crawl = CriminalNoteBookCrawl.new
-    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
-    heading = 'Maximum Punishment is Imprisonment for 2 Years Less a Day (summary conviction)'
-    table_info = notebook_crawl.process_table(Nokogiri::HTML(response).css('table.wikitable').first,
-                                              heading)
-    assert_true(table_info.all? do |h|
-      h[:punishment] == heading
-    end)
-  end
-
-  def test_parse_from_column
-    notebook_crawl = CriminalNoteBookCrawl.new
-    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
-    td_column = Nokogiri::HTML(response).css('table.wikitable').first.css('td[1]').first
-    column_data = notebook_crawl.parse_from_column(td_column)
-    assert_true column_data == 'Miscellaneous_Offences_Against_Public_Order'
-  end
-
+class CriminalNotebookCrawl2Test < CriminalNotebookCrawl1Test
   def test_fetch_based_on_offence
     notebook_crawl = CriminalNoteBookCrawl.new
     notebook_crawl.instance_variable_set(:@offence, 'List_of_Summary_Conviction_Offences')
@@ -181,53 +156,41 @@ class CriminalNotebookCrawlTest < Test::Unit::TestCase
     assert_true !returned_string.include?("\n")
   end
 
-  # fill out these tests please >>>>
+  def test_headings_for_tables
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    headings_for_tables = notebook_crawl.headings_for_tables(response)
+    assert_true headings_for_tables.is_a?(Array)
+    assert_true headings_for_tables.count.positive?
+  end
 
-  # def test_read_data_from_file
+  def test_process_table
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    heading = 'Maximum Punishment is Imprisonment for 2 Years Less a Day (summary conviction)'
+    table_info = notebook_crawl.process_table(Nokogiri::HTML(response).css('table.wikitable').first,
+                                              heading)
+    assert_true(table_info.all? do |h|
+      h[:punishment] == heading
+    end)
+  end
 
-  # end
+  def test_parse_from_column
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    td_column = Nokogiri::HTML(response).css('table.wikitable').first.css('td[1]').first
+    column_data = notebook_crawl.parse_from_column(td_column)
+    assert_true column_data == 'Miscellaneous_Offences_Against_Public_Order'
+  end
 
-  # def test_fetch_full_detail
-
-  # end
-
-  # def test_parse_blockquote
-
-  # end
-
-  # def test_headings_for_tables
-
-  # end
-
-  # def test_parse_tables_info
-
-  # end
-
-  # def test_process_table
-
-  # end
-
-  # def test_parse_from_column
-
-  # end
-
-  # def test_fetch_based_on_offence
-
-  # end
-
-  # def test_data_for_indictable
-
-  # end
-
-  # def test_data_for_hybrid
-
-  # end
-
-  # def test_key_infos
-
-  # end
-
-  # def test_extract_offence_from_html
-
-  # end
+  def test_read_data_from_file
+    notebook_crawl = CriminalNoteBookCrawl.new
+    offence = 'List_of_Summary_Conviction_Offences'
+    path = "#{notebook_crawl.class::JSON_PATH}/#{offence}/#{offence}.json"
+    assert_true File.exist?(path)
+    data_array = notebook_crawl.read_data_from_file(path)
+    assert_true data_array.is_a?(Array)
+  rescue StandardError
+    assert_true false
+  end
 end
