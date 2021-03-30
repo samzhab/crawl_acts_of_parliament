@@ -56,14 +56,14 @@ class TimelineWriter
   end
 
   def create_timeline_file
-    file = File.open('Acts_of_Parliament.timeline', 'w')
-    file.write("<?xml version='1.0' encoding='utf-8'?>\n<timeline>"\
-      "\n\t<version>2.3.1 (b518d5113b65 2020-11-12)</version>"\
-      "\n\t<timetype>gregoriantime</timetype>"\
-        "\n\t<categories>"\
-        "\n\t</categories>"\
-        "\n\t<events>")
-    file
+    File.open('Acts_of_Parliament.timeline', 'w') do |f|
+      f << %(<?xml version='1.0' encoding='utf-8'?>\n<timeline>)\
+    "\n\t<version>2.3.1 (b518d5113b65 2020-11-12)</version>"\
+    "\n\t<timetype>gregoriantime</timetype>"\
+      "\n\t<categories>"\
+      "\n\t</categories>"\
+      "\n\t<events>"
+    end
   end
 
   def close_timeline_file(timeline_file)

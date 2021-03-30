@@ -109,4 +109,54 @@ class CriminalNotebookCrawlTest < Test::Unit::TestCase
       h.key?(:minimums) && h.key?(:summary_election_maximum) && h.key?(:consecutive_time)
     end
   end
+
+  # fill out these tests please >>>>
+
+  # def test_read_data_from_file
+
+  # end
+
+  # def test_fetch_full_detail
+
+  # end
+
+  # def test_parse_blockquote
+
+  # end
+
+  # def test_headings_for_tables
+
+  # end
+
+  # def test_parse_tables_info
+
+  # end
+
+  # def test_process_table
+
+  # end
+
+  # def test_parse_from_column
+
+  # end
+
+  # def test_fetch_based_on_offence
+
+  # end
+
+  # def test_data_for_indictable
+
+  # end
+
+  # def test_data_for_hybrid
+
+  # end
+
+  # def test_key_infos
+
+  # end
+
+  # def test_extract_offence_from_html
+
+  # end
 end

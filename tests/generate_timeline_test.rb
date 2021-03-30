@@ -47,4 +47,28 @@ class GenerateTimelineTest < Test::Unit::TestCase
             }] } } }
     assert_true response == expected_response
   end
+  # write out these tests
+  # def test_create_timeline_file
+
+  # end
+
+  # def test_add_to_timeline_file
+
+  # end
+
+  # def test_open_json_file
+
+  # end
+
+  # def test_display_message
+
+  # end
+
+  # def test_display_saved_timeline_xml
+
+  # end
+
+  # def test_display_error
+
+  # end
 end

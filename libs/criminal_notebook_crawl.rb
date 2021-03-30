@@ -117,11 +117,8 @@ class CriminalNoteBookCrawl
     end
   end
 
-<<<<<<< HEAD
   private
 
-=======
->>>>>>> 07d623dd316dcf449cd2a325a89d35fed3b379ee
   def parse_blockquote(response, values)
     text_to_write = []
     Nokogiri::HTML(response).css('blockquote').each do |blockquote|
@@ -211,10 +208,7 @@ class CriminalNoteBookCrawl
   end
 end
 
-<<<<<<< HEAD
 notebook_crawl = CriminalNoteBookCrawl.new
 notebook_crawl.start
-=======
 # notebook_crawl = CriminalNoteBookCrawl.new
 # notebook_crawl.start
->>>>>>> 07d623dd316dcf449cd2a325a89d35fed3b379ee
