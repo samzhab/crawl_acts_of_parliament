@@ -19,9 +19,10 @@ class CriminalNotebookCrawlTest < Test::Unit::TestCase
   BASE_URL = 'http://criminalnotebook.ca/index.php/'
 
   LIST = {
-    'List_of_Summary_Conviction_Offences'  => ['summary conviction'],
-    'List_of_Straight_Indictable_Offences' => ['indictable offence'],
-    'List_of_Hybrid_Offences'              => %w(hybrid)
+    'List_of_Summary_Conviction_Offences'         => ['summary conviction'],
+    'List_of_Straight_Indictable_Offences'        => ['indictable offence'],
+    'List_of_Hybrid_Offences'                     => %w(hybrid),
+    'Miscellaneous_Offences_Against_Public_Order' => %w()
   }.freeze
 
   LIST.each do |offence, _values|
@@ -40,18 +41,10 @@ class CriminalNotebookCrawlTest < Test::Unit::TestCase
     notebook_crawl = CriminalNoteBookCrawl.new
     notebook_crawl.class::LIST.each do |offence, _values|
       notebook_crawl.create_folders(offence)
+      sleep 0.2
+      assert_true Dir.exist?("#{notebook_crawl.class::JSON_PATH}/#{offence}")
+      assert_true Dir.exist?("#{notebook_crawl.class::TEXT_PATH}/#{offence}")
     end
-    sleep 0.2
-    directories_exists(notebook_crawl)
-  end
-
-  def directories_exists(notebook_crawl)
-    [notebook_crawl.class::JSON_PATH, notebook_crawl.class::TEXT_PATH].each do |path|
-      notebook_crawl.class::LIST.each do |offence, _values|
-        return false unless Dir.exist?("#{path}/#{offence}")
-      end
-    end
-    true
   end
 
   def test_get_request
@@ -63,51 +56,129 @@ class CriminalNotebookCrawlTest < Test::Unit::TestCase
     end
   end
 
-  def test_parse_tables_info
+  def test_parse_tables_info_for_summary_offences
     notebook_crawl = CriminalNoteBookCrawl.new
-    notebook_crawl.class::LIST.each do |offence, _values|
-      notebook_crawl.instance_variable_set(:@offence, offence)
-      response = notebook_crawl.get_request("#{notebook_crawl.class::BASE_URL}#{offence}",
-                                            {})
-      parsed_info = notebook_crawl.parse_tables_info(response)
-      assert_the_data(parsed_info, offence)
+    notebook_crawl.instance_variable_set(:@offence, 'List_of_Summary_Conviction_Offences')
+    url = "#{notebook_crawl.class::BASE_URL}List_of_Summary_Conviction_Offences"
+    response = notebook_crawl.get_request(url, {})
+    assert_equal 200, response.code
+    parsed_info = notebook_crawl.parse_tables_info(response)
+    assert_true(parsed_info.all? do |h|
+                  h.key?(:offence) &&
+                    h.key?(:section) &&
+                    h.key?(:maximum_fine) &&
+                    h.key?(:minimums) &&
+                    h.key?(:consecutive_time)
+                end)
+  end
+
+  def test_parse_tables_info_for_indictable_offences
+    notebook_crawl = CriminalNoteBookCrawl.new
+    notebook_crawl.instance_variable_set(:@offence, 'List_of_Straight_Indictable_Offences')
+    url = "#{notebook_crawl.class::BASE_URL}List_of_Straight_Indictable_Offences"
+    response = notebook_crawl.get_request(url, {})
+    assert_equal 200, response.code
+    parsed_info = notebook_crawl.parse_tables_info(response)
+    assert_true(parsed_info.all? do |h|
+                  h.key?(:offence) &&
+                    h.key?(:section) &&
+                    h.key?(:minimums) &&
+                    h.key?(:mandatory_consecutive_time)
+                end)
+  end
+
+  def test_parse_tables_info_for_hybrid_offences
+    notebook_crawl = CriminalNoteBookCrawl.new
+    notebook_crawl.instance_variable_set(:@offence, 'List_of_Hybrid_Offences')
+    url = "#{notebook_crawl.class::BASE_URL}List_of_Hybrid_Offences"
+    response = notebook_crawl.get_request(url, {})
+    assert_equal 200, response.code
+    parsed_info = notebook_crawl.parse_tables_info(response)
+    assert_true(parsed_info.all? do |h|
+                  h.key?(:offence) &&
+                    h.key?(:section) &&
+                    h.key?(:minimums) &&
+                    h.key?(:summary_election_maximum) &&
+                    h.key?(:consecutive_time)
+                end)
+  end
+
+  def test_parse_blockquote
+    sample_url = "#{BASE_URL}Miscellaneous_Offences_Against_Public_Order"
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request(sample_url, {})
+    assert_equal 200, response.code
+    values = ['summary conviction']
+    text_parsed = notebook_crawl.parse_blockquote(response, ['summary conviction'])
+    text_parsed.flatten.each do |text|
+      assert_false !values.all? { |val| text.downcase.include?(val) }
     end
   end
 
-  def assert_the_data(parsed_info, offence)
-    assert_true assert_general_info(parsed_info)
-    case offence
-    when 'List_of_Summary_Conviction_Offences'
-      assert_true assert_summary_conviction(parsed_info)
-    when 'List_of_Straight_Indictable_Offences'
-      assert_true assert_straight_indictable(parsed_info)
-    when 'List_of_Hybrid_Offences'
-      assert_true assert_hybrid_offences(parsed_info)
-    end
+  def test_headings_for_tables
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    headings_for_tables = notebook_crawl.headings_for_tables(response)
+    assert_true headings_for_tables.is_a?(Array)
+    assert_true headings_for_tables.count.positive?
   end
 
-  def assert_general_info(parsed_info)
-    parsed_info.all? do |h|
-      h.key?(:offence) && h.key?(:section)
-    end
+  def test_process_table
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    heading = 'Maximum Punishment is Imprisonment for 2 Years Less a Day (summary conviction)'
+    table_info = notebook_crawl.process_table(Nokogiri::HTML(response).css('table.wikitable').first,
+                                              heading)
+    assert_true(table_info.all? do |h|
+      h[:punishment] == heading
+    end)
   end
 
-  def assert_summary_conviction(parsed_info)
-    parsed_info.all? do |h|
-      h.key?(:maximum_fine) && h.key?(:minimums) && h.key?(:consecutive_time)
-    end
+  def test_parse_from_column
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    td_column = Nokogiri::HTML(response).css('table.wikitable').first.css('td[1]').first
+    column_data = notebook_crawl.parse_from_column(td_column)
+    assert_true column_data == 'Miscellaneous_Offences_Against_Public_Order'
   end
 
-  def assert_straight_indictable(parsed_info)
-    parsed_info.all? do |h|
-      h.key?(:minimums) && h.key?(:mandatory_consecutive_time)
-    end
+  def test_fetch_based_on_offence
+    notebook_crawl = CriminalNoteBookCrawl.new
+    notebook_crawl.instance_variable_set(:@offence, 'List_of_Summary_Conviction_Offences')
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    table = Nokogiri::HTML(response).css('table.wikitable').first
+    td_column_first = table.css('td[3]').zip(table.css('td[4]'),
+                                             table.css('td[5]')).first
+    method_keys = notebook_crawl.fetch_based_on_offence(td_column_first[0],
+                                                        td_column_first[1],
+                                                        td_column_first[2]).keys
+    assert_true method_keys == %i(maximum_fine minimums consecutive_time)
   end
 
-  def assert_hybrid_offences(parsed_info)
-    parsed_info.all? do |h|
-      h.key?(:minimums) && h.key?(:summary_election_maximum) && h.key?(:consecutive_time)
-    end
+  def test_key_infos
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request("#{BASE_URL}List_of_Summary_Conviction_Offences", {})
+    table = Nokogiri::HTML(response).css('table.wikitable').first
+    td_column_first = table.css('td[3]').zip(table.css('td[4]'),
+                                             table.css('td[5]')).first
+    string_array = notebook_crawl.key_infos([td_column_first[0], td_column_first[1]])
+    assert_true string_array.is_a?(Array)
+  end
+
+  def test_extract_offence_from_html
+    notebook_crawl = CriminalNoteBookCrawl.new
+    response = notebook_crawl.get_request(
+      "#{BASE_URL}Miscellaneous_Offences_Against_Public_Order", {}
+    )
+    blockquote = Nokogiri::HTML(response).css('blockquote').first.text
+    value_exist = notebook_crawl.extract_offence_from_html(['summary conviction'], blockquote)
+    assert_true !!value_exist == value_exist
+  end
+
+  def test_beutify_string
+    notebook_crawl = CriminalNoteBookCrawl.new
+    returned_string = notebook_crawl.beutify_string("\nHello")
+    assert_true !returned_string.include?("\n")
   end
 
   # fill out these tests please >>>>
