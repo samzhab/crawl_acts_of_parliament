@@ -117,8 +117,6 @@ class CriminalNoteBookCrawl
     end
   end
 
-  private
-
   def parse_blockquote(response, values)
     text_to_write = []
     Nokogiri::HTML(response).css('blockquote').each do |blockquote|
@@ -151,50 +149,42 @@ class CriminalNoteBookCrawl
                            table.css('td[3]'),
                            table.css('td[4]'),
                            table.css('td[5]')).each do |td1, td2, td3, td4, td5|
-      detail_hash = fetch_based_on_offence(td1, td2, td3, td4, td5)
-      detail_hash[:punishment] = heading
-      detail_hash[:url] = parse_from_column(td1)
+      detail_hash = { offence:    beutify_string(td1.text),
+                      section:    beutify_string(td2.text),
+                      punishment: beutify_string(heading),
+                      url:        parse_from_column(td1) }.merge!(fetch_based_on_offence(td3, td4,
+                                                                                         td5))
       details_array << detail_hash
     end
     details_array
+  end
+
+  def beutify_string(str)
+    str.delete("\n").strip.gsub('From', ' From')
   end
 
   def parse_from_column(td1)
     td1.css('a').map { |a| a['href'].split('/').last.split('#').first }.last
   end
 
-  def fetch_based_on_offence(td1, td2, td3, td4, td5)
-    general_data = { offence: td1.text.delete("\n").strip.gsub('From', ' From'),
-                     section: td2.text.delete("\n").strip }
-
+  def fetch_based_on_offence(td3, td4, td5)
+    general_data = {}
     case @offence
     when 'List_of_Summary_Conviction_Offences'
-      data_for_summary(general_data, [td3, td4, td5])
+      general_data[:maximum_fine],
+      general_data[:minimums],
+      general_data[:consecutive_time] = key_infos([td3, td4, td5])
     when 'List_of_Straight_Indictable_Offences'
-      data_for_indictable(general_data, [td3, td4])
+      general_data[:minimums],
+      general_data[:mandatory_consecutive_time] = key_infos([td3, td4])
     when 'List_of_Hybrid_Offences'
-      data_for_hybrid(general_data, [td3, td4, td5])
+      general_data[:minimums],
+      general_data[:summary_election_maximum],
+      general_data[:consecutive_time] = key_infos([td3, td4, td5])
     else
       {}
     end
     general_data
-  end
-
-  def data_for_summary(general_data, cols)
-    general_data[:maximum_fine],
-    general_data[:minimums],
-    general_data[:consecutive_time] = key_infos(cols)
-  end
-
-  def data_for_indictable(general_data, cols)
-    general_data[:minimums],
-    general_data[:mandatory_consecutive_time] = key_infos(cols)
-  end
-
-  def data_for_hybrid(general_data, cols)
-    general_data[:minimums],
-    general_data[:summary_election_maximum],
-    general_data[:consecutive_time] = key_infos(cols)
   end
 
   def key_infos(cols)
@@ -208,7 +198,5 @@ class CriminalNoteBookCrawl
   end
 end
 
-notebook_crawl = CriminalNoteBookCrawl.new
-notebook_crawl.start
 # notebook_crawl = CriminalNoteBookCrawl.new
 # notebook_crawl.start
