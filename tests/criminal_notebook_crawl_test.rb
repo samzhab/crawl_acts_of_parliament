@@ -186,7 +186,7 @@ class CriminalNotebookCrawl2Test < CriminalNotebookCrawl1Test
   def test_read_data_from_file
     notebook_crawl = CriminalNoteBookCrawl.new
     offence = 'List_of_Summary_Conviction_Offences'
-    path = "tests/criminal_notebook_crawl/#{offence}.json"
+    path = "tests/webmocks/#{offence}.json"
     assert_true File.exist?(path)
     data_array = notebook_crawl.read_data_from_file(path)
     assert_true data_array.is_a?(Array)

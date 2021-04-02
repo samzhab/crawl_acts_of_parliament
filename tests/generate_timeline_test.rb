@@ -8,7 +8,7 @@ require_relative '../libs/generate_timeline'
 class GenerateTimelineTest < Test::Unit::TestCase
   def test_generate
     timeliner = GenerateTimeline.new
-    path = 'tests/generate_timeline/all_parliament_acts.json'
+    path = 'tests/JSONs/all_parliament_acts.json'
     assert_true File.exist?(path)
     timeliner.generate(path)
     sleep 0.2

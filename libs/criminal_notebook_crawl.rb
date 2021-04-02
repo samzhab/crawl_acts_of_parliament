@@ -40,6 +40,8 @@ module CrawlerHelper
   end
 
   def create_folders(offence)
+    Process.spawn('mkdir JSONs') unless Dir.exist?('JSONs')
+    Process.spawn('mkdir TEXTs') unless Dir.exist?('TEXTs')
     [self.class::JSON_PATH, self.class::TEXT_PATH].each do |path|
       if Dir.exist?(path.to_s)
         # Process.spawn("rm -rf #{path}/#{offence}") if Dir.exist?("#{path}/#{offence}")
