@@ -12,12 +12,12 @@ class GenerateTimeline
   DECADES = %w(00 10 20 30 40 50 60 70 80 90).freeze
   LETTERS = %w(A B C D E F G H I J K
                L M N O P Q R S T U V W X Y Z).freeze
-  def generate
+  def generate(path)
     puts 'File not found' and return unless File.exist?(
-      'JSONs/all_parliament_acts.json'
+      path
     )
 
-    json_data = JSON.parse(File.read('JSONs/all_parliament_acts.json'))
+    json_data = JSON.parse(File.read(path))
     sorted_json = json_data.group_by { |h| h['year'] }.sort.to_h
     formatted_json = { 'title' => 'Consolidated Acts of Parliament',
                       'show_today' => true, 'periods' => {} }
@@ -29,6 +29,7 @@ class GenerateTimeline
     sorted_json.each do |year, acts|
       decade = ((year.to_i / 10).to_i * 10)
       next if decade.zero?
+
       formatted_json['periods'] = format_json_by_decade(formatted_json['periods'], decade, acts)
     end
     formatted_json
@@ -46,11 +47,13 @@ class GenerateTimeline
   end
 
   def write_to_yaml_file(formatted_json)
-    File.open('YAMLs/all_parliament_acts.yml', 'w') { |file|
+    Process.spawn('mkdir YAMLs') unless Dir.exist?('YAMLs')
+    sleep 0.2
+    File.open('YAMLs/all_parliament_acts.yml', 'w') do |file|
       file.write(formatted_json.to_yaml)
       file.close
-    }
+    end
   end
 end
 # timeliner = GenerateTimeline.new
-# timeliner.generate
+# timeliner.generate('JSONs/all_parliament_acts.json')

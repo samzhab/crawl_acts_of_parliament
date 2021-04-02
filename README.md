@@ -1,56 +1,63 @@
 ## crawl Acts of Parliament Canada - Ruby
-![temporary logo](https://bt-strike.s3-us-west-2.amazonaws.com/images/ruby.gif "bt-strike temporary logo")
+
+![temporary logo](https://bt-strike.s3-us-west-2.amazonaws.com/images/ruby.gif 'bt-strike temporary logo')
 
 A simple ruby script to be used for a later project as a library to acquire consolidated acts of Parliament in Canada, serialize it to JSON and get all the pdf to store locally.
 
 Prerequisites:
-* rvm (rvm.io)
-* ruby interpreter (3.0.0)
-* required gems (see Gemfile)
-* linux terminal
+
+- rvm (rvm.io)
+- ruby interpreter (3.0.0)
+- required gems (see Gemfile)
+- linux terminal
+
+To run generate_timeline.rb
+timeliner = GenerateTimeline.new
+timeliner.generate('JSONs/all_parliament_acts.json')
+
+Tests
+To run the test for criminal_notebook_crawl
+
+1. Make sure we have folders JSONs and TEXTs
+2. Run `$ ./curl_get_stubs_for_notebook.sh`
 
 Webmock and Stubbing http requests:
-* you can stub your http requests using webmock for testing
-* run the bash script `$ ./curl_get_stubs.sh`
-* add following lines begining of 'LETTERS' loop `body = File.read("webmocks/#{index}.html")`
-* read your files with `body = File.read("webmocks/#{index}.html")`
-* stub your http requests (add next to previous line)
-          ```stub_request(:get, url).
-            with(headers: {
-              'Accept'=>'*/*',
-              'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-              'Host'=>'laws-lois.justice.gc.ca',
-              'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
-            }).to_return(status: 200, body: body, headers: {})
-        ```
 
+- you can stub your http requests using webmock for testing
+- run the bash script `$ ./curl_get_stubs.sh`
+- add following lines begining of 'LETTERS' loop `body = File.read("webmocks/#{index}.html")`
+- read your files with `body = File.read("webmocks/#{index}.html")`
+- stub your http requests (add next to previous line)
+  `stub_request(:get, url). with(headers: { 'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Host'=>'laws-lois.justice.gc.ca', 'User-Agent'=>'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0' }).to_return(status: 200, body: body, headers: {}) `
 
 Features to add [coming soon...]
-* extract other relevant information such as last updated and date of ascentamong others
+
+- extract other relevant information such as last updated and date of ascentamong others
 
 Setup usage with rvm and process event series:
-* get latest ruby interpreter
-`$ rvm install ruby`a
-* create a gemset
-`$ rvm gemset create <gemset>`
-eg. `$ rvm gemset create person_doesnot_exist`
-* use created gemset
-`$ rvm <ruby version>@<gemset>`
-* install bundler gem
-`$ gem install bundler`
-* install necessary gems
-`$ bundle`
-* create folder 'persons' for articles saved as pdf
-`$ mkdir persons`
-* make script executable
-`$ chmod +x <script_name.rb>`
-* run script
-`$ ./<script_name.rb>`
 
+- get latest ruby interpreter
+  `$ rvm install ruby`a
+- create a gemset
+  `$ rvm gemset create <gemset>`
+  eg. `$ rvm gemset create person_doesnot_exist`
+- use created gemset
+  `$ rvm <ruby version>@<gemset>`
+- install bundler gem
+  `$ gem install bundler`
+- install necessary gems
+  `$ bundle`
+- create folder 'persons' for articles saved as pdf
+  `$ mkdir persons`
+- make script executable
+  `$ chmod +x <script_name.rb>`
+- run script
+  `$ ./<script_name.rb>`
 
 Further Development [coming soon...]
-* Task 1 -
-* Task 1-1 -
+
+- Task 1 -
+- Task 1-1 -
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 

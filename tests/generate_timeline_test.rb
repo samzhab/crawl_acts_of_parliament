@@ -6,14 +6,11 @@ require 'test/unit'
 require_relative '../libs/generate_timeline'
 
 class GenerateTimelineTest < Test::Unit::TestCase
-  def test_source_json
-    assert_true File.exist?("#{Dir.pwd}/JSONs/all_parliament_acts.json")
-    assert_true Dir.exist?('YAMLs')
-  end
-
   def test_generate
     timeliner = GenerateTimeline.new
-    timeliner.generate
+    path = 'tests/generate_timeline/all_parliament_acts.json'
+    assert_true File.exist?(path)
+    timeliner.generate(path)
     sleep 0.2
     assert_true File.exist?("#{Dir.pwd}/YAMLs/all_parliament_acts.yml")
   rescue StandardError
@@ -54,8 +51,8 @@ class GenerateTimelineTest < Test::Unit::TestCase
 
   def test_write_to_yaml_file
     formatted_json = { 1870 =>
-                              { 'acts' =>
-                                          [{ 'name' => 'Works on the Ottawa River' }] } }
+                               { 'acts' =>
+                                           [{ 'name' => 'Works on the Ottawa River' }] } }
     timeliner = GenerateTimeline.new
     response = timeliner.write_to_yaml_file(formatted_json)
     assert_equal response, nil
