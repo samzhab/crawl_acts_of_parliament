@@ -11,16 +11,6 @@ Prerequisites:
 - required gems (see Gemfile)
 - linux terminal
 
-To run generate_timeline.rb
-timeliner = GenerateTimeline.new
-timeliner.generate('JSONs/all_parliament_acts.json')
-
-Tests
-To run the test for criminal_notebook_crawl
-
-1. Make sure we have folders JSONs and TEXTs
-2. Run `$ ./curl_get_stubs_for_notebook.sh`
-
 Webmock and Stubbing http requests:
 
 - you can stub your http requests using webmock for testing
@@ -58,6 +48,19 @@ Further Development [coming soon...]
 
 - Task 1 -
 - Task 1-1 -
+
+Tests
+To run the test for criminal_notebook_crawl
+
+1. Make sure we have folders JSONs and TEXTs in the root directory.
+2. Run `$ ./curl_get_stubs_for_notebook.sh`
+3. From root directory
+   `$ ruby tests/criminal_notebook_crawl_test.rb`
+
+To run the test for generate_timeline
+
+1. From root directory
+   `$ ruby tests/generate_timeline_test.rb`
 
 [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
 
