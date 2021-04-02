@@ -33,7 +33,7 @@ class CriminalNotebookCrawl1Test < Test::Unit::TestCase
       .with(headers: { 'Accept'          => '*/*',
                        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
                        'Host'            => 'criminalnotebook.ca',
-                       'User-Agent'      => 'rest-client/2.1.0 (linux-gnu x86_64) ruby/2.6.6p146' })
+                       'User-Agent'      => 'rest-client/2.1.0 (linux-gnu x86_64) ruby/3.0.0p0' })
       .to_return(status: 200, body: body, headers: {})
   end
 
