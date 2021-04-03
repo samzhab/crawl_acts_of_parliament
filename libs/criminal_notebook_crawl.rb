@@ -28,14 +28,14 @@ module CrawlerHelper
     File.open("#{self.class::TEXT_PATH}/#{offence}/#{url}.txt", 'w+') do |f|
       text_to_write.each do |element|
         f.puts(element.to_s)
-        f.close
       end
+      f.close
     end
     File.open("#{self.class::TEXT_PATH}/#{offence}.txt", 'a') do |f|
       text_to_write.each do |element|
         f.puts(element.to_s)
-        f.close
       end
+      f.close
     end
   end
 
@@ -69,10 +69,12 @@ module CrawlerHelper
   def display_message(message, flag)
     case flag
     when 'notice'
-      puts "[Notice][CAP] Finished processing url ... #{self.class::BASE_URL}#{message}"
+      message = "[Notice][CAP] Finished processing url ... #{self.class::BASE_URL}#{message}"
     when 'status'
-      puts "[Status][CAP] Processing url #{self.class::BASE_URL}#{message} now..."
+      message = "[Status][CAP] Processing url #{self.class::BASE_URL}#{message} now..."
     end
+    puts message
+    message
   end
 end
 
@@ -103,14 +105,15 @@ class CriminalNoteBookCrawl
       display_message(offence, 'status')
       tables_info = parse_tables_info(response)
       write_json_to_file(offence, tables_info)
-      fetch_full_detail(offence, values)
+      path = "#{JSON_PATH}/#{offence}/#{offence}.json"
+      fetch_full_detail(path, offence, values)
       display_message(offence, 'notice')
     end
   end
 
-  def fetch_full_detail(offence, values)
+  def fetch_full_detail(path, offence, values)
     used_urls = []
-    read_data_from_file("#{JSON_PATH}/#{offence}/#{offence}.json").each do |dat|
+    read_data_from_file(path).each do |dat|
       next if used_urls.include?(dat['url'])
 
       used_urls << dat['url']
