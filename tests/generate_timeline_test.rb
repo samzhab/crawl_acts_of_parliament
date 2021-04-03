@@ -57,4 +57,26 @@ class GenerateTimelineTest < Test::Unit::TestCase
     response = timeliner.write_to_yaml_file(formatted_json)
     assert_equal response, nil
   end
+
+  def test_format_and_write_to_yaml
+    timeliner = GenerateTimeline.new
+    formatted_json = { 'title' => 'Consolidated Acts of Parliament', 'show_today' => true,
+      'periods' =>
+          { 2010 => { 'acts' => [{
+            'name' => 'Canada and Taiwan Territories Tax Arrangement Act, 2016', 'year' => '2016'
+          }] },
+            2020 => { 'acts' => [{
+              'name' => 'Canada Emergency Response Benefit Act', 'year' => '2020'
+            }] } } }
+    expected_response = { 'periods' => [
+      { 'name' => "2010's",
+        'acts' => [{ 'January 2016'=>'Canada and Taiwan Territories Tax Arrangement Act, 2016' }] },
+      { 'name' => "2020's",
+        'acts' => [{ 'January 2020'=>'Canada Emergency Response Benefit Act' }] }
+    ] }
+    response = timeliner.format_and_write_to_yaml(formatted_json)
+    assert_true response == expected_response
+    file_exists = File.exist?('YAMLs/all_parliament_acts.yml')
+    assert_true file_exists
+  end
 end
