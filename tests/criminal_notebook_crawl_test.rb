@@ -30,10 +30,14 @@ class CriminalNotebookCrawl1Test < Test::Unit::TestCase
     body = File.read("webmocks/criminalnotebook/#{offence}.html")
     # ------------------------------------------------------stub requests
     stub_request(:get, url)
-      .with(headers: { 'Accept'          => '*/*',
-                       'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                       'Host'            => 'criminalnotebook.ca',
-                       'User-Agent'      => 'rest-client/2.1.0 (linux-gnu x86_64) ruby/3.0.0p0' })
+      .with(
+        headers: {
+          'Accept'          => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'Host'            => 'criminalnotebook.ca',
+          'User-Agent'      => 'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
+        }
+      )
       .to_return(status: 200, body: body, headers: {})
   end
 
@@ -192,5 +196,41 @@ class CriminalNotebookCrawl2Test < CriminalNotebookCrawl1Test
     assert_true data_array.is_a?(Array)
   rescue StandardError
     assert_true false
+  end
+
+  def test_write_json_to_file
+    notebook_crawl = CriminalNoteBookCrawl.new
+    sample_json = [{ 'name' => 'test_write_json_to_file' }]
+    offence = 'List_of_Summary_Conviction_Offences'
+    notebook_crawl.write_json_to_file(offence, sample_json)
+    assert_true File.exist?("#{notebook_crawl.class::JSON_PATH}/#{offence}/#{offence}.json")
+    assert_true File.exist?("#{notebook_crawl.class::JSON_PATH}/#{offence}/grouped_#{offence}.json")
+  end
+
+  def test_write_text_to_file
+    notebook_crawl = CriminalNoteBookCrawl.new
+    text_to_write = %w(Miscellaneous_Offences_Against_Public_Order)
+    url = 'Miscellaneous_Offences_Against_Public_Order'
+    offence = 'List_of_Summary_Conviction_Offences'
+    notebook_crawl.write_text_to_file(text_to_write, url, offence)
+    assert_true File.exist?("#{notebook_crawl.class::TEXT_PATH}/#{offence}/#{url}.txt")
+    assert_true File.exist?("#{notebook_crawl.class::TEXT_PATH}/#{offence}.txt")
+  end
+
+  def test_fetch_full_detail
+    notebook_crawl = CriminalNoteBookCrawl.new
+    path = 'tests/webmocks/List_of_Summary_Conviction_Offences.json'
+    offence = 'List_of_Summary_Conviction_Offences'
+    values = ['summary conviction']
+    url = 'Miscellaneous_Offences_Against_Public_Order'
+    notebook_crawl.fetch_full_detail(path, offence, values)
+    assert_true File.exist?("#{notebook_crawl.class::TEXT_PATH}/#{offence}/#{url}.txt")
+    assert_true File.exist?("#{notebook_crawl.class::TEXT_PATH}/#{offence}.txt")
+  end
+
+  def test_display_message
+    notebook_crawl = CriminalNoteBookCrawl.new
+    output = notebook_crawl.display_message('List_of_Summary_Conviction_Offences', 'notice')
+    assert_true output.include?('[Notice][CAP] Finished processing url ...')
   end
 end
