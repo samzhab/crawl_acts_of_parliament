@@ -49,7 +49,6 @@ Further Development [coming soon...]
 - Task 1 -
 - Task 1-1 -
 
-Tests for the tasks
 To run the test for criminal_notebook_crawl
 
 1. Run `$ ./curl_get_stubs_for_notebook.sh`
