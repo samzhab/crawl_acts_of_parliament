@@ -49,12 +49,11 @@ Further Development [coming soon...]
 - Task 1 -
 - Task 1-1 -
 
-Tests
+Tests for the tasks
 To run the test for criminal_notebook_crawl
 
-1. Make sure we have folders JSONs and TEXTs in the root directory.
-2. Run `$ ./curl_get_stubs_for_notebook.sh`
-3. From root directory
+1. Run `$ ./curl_get_stubs_for_notebook.sh`
+2. From root directory
    `$ ruby tests/criminal_notebook_crawl_test.rb`
 
 To run the test for generate_timeline
