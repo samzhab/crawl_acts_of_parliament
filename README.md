@@ -22,7 +22,7 @@ Webmock and Stubbing http requests:
 
 Features to add [coming soon...]
 
-- extract other relevant information such as last updated and date of ascentamong others
+- extract other relevant information such as last updated and date of ascent among others
 
 Setup usage with rvm and process event series:
 
