@@ -70,5 +70,5 @@ class GenerateTimeline
   end
 end
 
-# timeliner = GenerateTimeline.new
-# timeliner.generate('JSONs/all_parliament_acts.json')
+timeliner = GenerateTimeline.new
+timeliner.generate('JSONs/all_parliament_acts.json')

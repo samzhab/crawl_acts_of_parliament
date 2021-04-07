@@ -30,12 +30,10 @@ class CriminalNotebookCrawl1Test < Test::Unit::TestCase
     body = File.read("webmocks/criminalnotebook/#{offence}.html")
     # ------------------------------------------------------stub requests
     stub_request(:get, url)
-<<<<<<< HEAD
       .with(headers: { 'Accept'          => '*/*',
                        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
                        'Host'            => 'criminalnotebook.ca',
                        'User-Agent'      => 'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0' })
-=======
       .with(
         headers: {
           'Accept'          => '*/*',
@@ -44,7 +42,6 @@ class CriminalNotebookCrawl1Test < Test::Unit::TestCase
           'User-Agent'      => 'rest-client/2.1.0 (linux x86_64) ruby/3.0.0p0'
         }
       )
->>>>>>> dd7f15b9db3be2a2e61f3a9187849ebffbae1d68
       .to_return(status: 200, body: body, headers: {})
   end
 
