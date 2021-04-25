@@ -18,16 +18,16 @@ class GenerateTimeline
     )
 
     json_data = JSON.parse(File.read(path))
-    sorted_json = json_data.group_by { |h| h['year'] }.sort.to_h
+    sorted_json = json_data.group_by { |h| h['year'].to_i }.sort.to_h
     formatted_json = { 'title' => 'Consolidated Acts of Parliament',
-                      'show_today' => true, 'periods' => {} }
+                       'show_today' => true, 'periods' => {} }
     formatted_json = process_sorted_json(formatted_json, sorted_json)
     format_and_write_to_yaml(formatted_json)
   end
 
   def process_sorted_json(formatted_json, sorted_json)
     sorted_json.each do |year, acts|
-      decade = ((year.to_i / 10).to_i * 10)
+      decade = year
       next if decade.zero?
 
       formatted_json['periods'] = format_json_by_decade(formatted_json['periods'], decade, acts)
@@ -50,7 +50,7 @@ class GenerateTimeline
     Process.spawn('mkdir YAMLs') unless Dir.exist?('YAMLs')
     sleep 0.2
     File.open('YAMLs/all_parliament_acts.yml', 'a+') do |file|
-      file.write(formatted_json.to_yaml)
+      file.write(formatted_json.to_yaml[3..])
       file.close
     end
   end
@@ -63,7 +63,8 @@ class GenerateTimeline
     json_to_write = { 'periods' => [] }
     formatted_json['periods'].each do |period, hash|
       acts = hash['acts'].map { |act| { "January #{act['year']}" => act['name'] } }
-      json_to_write['periods'] << { 'name' => "#{period}'s", 'acts' => acts }
+      period = (period % 10).zero? ? "#{period}'s" : period.to_s
+      json_to_write['periods'] << { 'name' => period, 'acts' => acts }
     end
     write_to_yaml_file(json_to_write)
     json_to_write
