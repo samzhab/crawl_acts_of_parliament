@@ -31,13 +31,14 @@ GEM
     mime-types-data (3.2021.0225)
     minitest (5.14.4)
     netrc (0.11.0)
-    nokogiri (1.11.2-x86_64-linux)
+    nokogiri (1.13.2-x86_64-linux)
       racc (~> 1.4)
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
+    progressbar (1.11.0)
     public_suffix (4.0.6)
-    racc (1.5.2)
+    racc (1.6.0)
     rack (2.2.3)
     rainbow (3.0.0)
     regexp_parser (2.1.1)
@@ -90,6 +91,7 @@ DEPENDENCIES
   fileutils
   json
   nokogiri
+  progressbar
   rest-client
   rubocop
   rubocop-performance
