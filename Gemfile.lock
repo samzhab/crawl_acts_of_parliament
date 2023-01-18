@@ -36,9 +36,10 @@ GEM
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
+    progressbar (1.11.0)
     public_suffix (4.0.6)
     racc (1.5.2)
-    rack (2.2.3)
+    rack (3.0.4.1)
     rainbow (3.0.0)
     regexp_parser (2.1.1)
     rest-client (2.1.0)
@@ -90,6 +91,7 @@ DEPENDENCIES
   fileutils
   json
   nokogiri
+  progressbar
   rest-client
   rubocop
   rubocop-performance
