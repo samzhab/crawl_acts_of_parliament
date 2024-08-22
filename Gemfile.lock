@@ -36,6 +36,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
+    progressbar (1.13.0)
     public_suffix (4.0.6)
     racc (1.5.2)
     rack (2.2.3)
@@ -46,7 +47,8 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.2.4)
+    rexml (3.3.6)
+      strscan
     rubocop (1.11.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
@@ -66,6 +68,7 @@ GEM
       rack (>= 1.1)
       rubocop (>= 0.90.0, < 2.0)
     ruby-progressbar (1.11.0)
+    strscan (3.1.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unf (0.1.4)
@@ -90,6 +93,7 @@ DEPENDENCIES
   fileutils
   json
   nokogiri
+  progressbar
   rest-client
   rubocop
   rubocop-performance
